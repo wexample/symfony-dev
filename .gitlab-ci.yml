@@ -1,10 +1,10 @@
 stages:
   - mirror
 
-setup:
+mirror:
   stage: mirror
   script:
     - cd ${CI_PROJECT_DIR}
     - git remote add github git@github.com:wexample/symfony-dev.git
     - git fetch
-    - git push origin github
+    - git push --mirror github
