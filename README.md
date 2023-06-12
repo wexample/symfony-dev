@@ -1,2 +1,2 @@
-# A PhpUnit adapter for Symfony 6
+# Development tools for Symfony
 
