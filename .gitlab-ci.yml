@@ -5,7 +5,7 @@ mirror:
   stage: mirror
   script:
     - cd ${CI_PROJECT_DIR}
-    - chown -R www-data:www-data ${CI_PROJECT_DIR}
+    - sudo chown -R www-data:www-data ${CI_PROJECT_DIR}
     - sudo -u www-data git remote remove github || true
     - sudo -u www-data git remote add github git@github.com:wexample/symfony-dev.git
     - sudo -u www-data git fetch
