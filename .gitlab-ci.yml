@@ -5,6 +5,7 @@ mirror:
   stage: mirror
   script:
     - cd ${CI_PROJECT_DIR}
+    - git remote remove github || true
     - git remote add github git@github.com:wexample/symfony-dev.git
     - git fetch
     - git push --mirror github
