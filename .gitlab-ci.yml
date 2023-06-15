@@ -1,12 +1,7 @@
-stages:
-  - mirror
+variables:
+  SYMFONY_PACKAGE_NAME: symfony-dev
 
-mirror:
-  stage: mirror
-  script:
-    - cd ${CI_PROJECT_DIR}
-    - sudo chown -R www-data:www-data ${CI_PROJECT_DIR}
-    - sudo -u www-data git remote remove github || true
-    - sudo -u www-data git remote add github git@github.com:wexample/symfony-dev.git
-    - sudo -u www-data git fetch
-    - sudo -u www-data git push --mirror github
+include:
+  - project: 'wexample/symfony-packages-templates'
+    ref: main
+    file: '.gitlab-ci.deploy.yml'
