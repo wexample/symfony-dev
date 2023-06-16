@@ -11,7 +11,7 @@ class WexampleSymfonyDevExtension extends AbstractWexampleSymfonyExtension
         array $configs,
         ContainerBuilder $container
     ) {
-        $this->loadServices(
+        $this->loadConfig(
             __DIR__,
             $container
         );
