@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
+use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
 #[AsCommand(
     name: 'dev:import-versions',
@@ -27,9 +28,7 @@ class DevImportVersionsCommand extends AbstractDevCommand
             DevHelper::COMPOSER_JSON_FILE_NAME,
         ]);
 
-        $appConfig = json_decode(
-            file_get_contents($composerFilePath)
-        );
+        $appConfig = JsonHelper::read($composerFilePath);
 
         $this->forEachDevPackage(function(
             string $packageName,

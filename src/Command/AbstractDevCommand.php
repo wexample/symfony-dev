@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
+use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
 abstract class AbstractDevCommand extends Command
 {
@@ -27,11 +28,9 @@ abstract class AbstractDevCommand extends Command
 
             // Only returns valid packages.
             if (is_file($composerFile)) {
-                $config = json_decode(file_get_contents($composerFile));
-
                 $callback(
                     basename($localPackagePath),
-                    $config
+                    JsonHelper::read($composerFile)
                 );
             }
         }
