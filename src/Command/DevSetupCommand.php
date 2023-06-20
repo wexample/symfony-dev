@@ -25,7 +25,6 @@ class DevSetupCommand extends AbstractDevCommand
         $env = $_ENV['CONTAINER_ENV'] ?? EnvironmentHelper::PROD;
 
         if ($env === EnvironmentHelper::LOCAL) {
-            $fs = new Filesystem();
             $vendorPath = $this->getCompanyVendorPath();
 
             // Get all the directories in the local vendor folder
@@ -34,9 +33,9 @@ class DevSetupCommand extends AbstractDevCommand
             ) use
             (
                 $vendorPath,
-                $fs,
                 $io
             ) {
+                $fs = new Filesystem();
                 $localVendorPath = $this->getCompanyVendorLocalPath();
                 $localPackagePath = FileHelper::joinPathParts([$localVendorPath, $packageName]);
                 // Corresponding path in the vendor directory
