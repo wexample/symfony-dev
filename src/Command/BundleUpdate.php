@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
-class VersionBuild extends AbstractDevCommand
+class BundleUpdate extends AbstractDevCommand
 {
     protected function configure(): void
     {

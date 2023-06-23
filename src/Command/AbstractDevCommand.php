@@ -12,6 +12,11 @@ use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
 abstract class AbstractDevCommand extends AbstractBundleCommand
 {
+    /**
+     * @var \Wexample\SymfonyDev\Service\BundleService
+     */
+    protected \Wexample\SymfonyHelpers\Service\BundleService $bundleService;
+
     public function __construct(
         protected KernelInterface $kernel,
         BundleService $bundleService,
