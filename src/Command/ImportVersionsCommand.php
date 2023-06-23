@@ -44,6 +44,10 @@ class ImportVersionsCommand extends AbstractDevCommand
             json_encode($appConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
 
+        unlink(
+            $this->kernel->getProjectDir() . '/composer.lock'
+        );
+
         $io->success('Updated '.$composerFilePath);
 
         return Command::SUCCESS;
