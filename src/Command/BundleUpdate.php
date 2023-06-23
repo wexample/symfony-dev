@@ -73,7 +73,7 @@ class BundleUpdate extends AbstractDevCommand
         $version = $input->getOption('version-number');
 
         if ($newVersion = $this->bundleService->versionBuild(
-            $bundle,
+            $this->bundleService->getBundleRootPath($bundle),
             $upgradeType,
             $increment,
             $build,

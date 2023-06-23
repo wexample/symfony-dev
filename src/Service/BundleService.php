@@ -2,11 +2,59 @@
 
 namespace Wexample\SymfonyDev\Service;
 
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
 {
+    /**
+     * Increment every package and update dependencies.
+     * @return array
+     */
+    public function updateAllLocalPackages(): array
+    {
+        $paths = $this->getAllLocalPackagesPaths();
+        $output = [];
+
+        foreach ($paths as $path) {
+            if ($newVersion = $this->versionBuild($path)) {
+                $output[$this->getPackageComposerConfiguration($path)->name] = $newVersion;
+            }
+        }
+
+        $this->updateAllRequirementsVersions();
+
+        return $output;
+    }
+
+    public function versionBuild(
+        string $packagePath,
+        string $upgradeType = BundleHelper::UPGRADE_TYPE_MINOR,
+        int $increment = 1,
+        bool $build = false,
+        string $version = null
+    ): string {
+        $config = $this->getPackageComposerConfiguration($packagePath);
+
+        if (!$version) {
+            $version = $config->version;
+        }
+
+        // Version increment
+        $config->version = BundleHelper::defaultVersionIncrement(
+            $version,
+            $upgradeType,
+            $increment,
+            $build
+        );
+
+        $this->savePackageComposerConfiguration(
+            $packagePath,
+            $config
+        );
+
+        return $config->version;
+    }
+
     public function updateAllRequirementsVersions(): array
     {
         $packages = $this->getAllLocalPackagesPaths();
@@ -79,34 +127,5 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
         }
 
         return $updated;
-    }
-
-    public function versionBuild(
-        BundleInterface $bundle,
-        string $upgradeType = BundleHelper::UPGRADE_TYPE_MINOR,
-        int $increment = 1,
-        bool $build = false,
-        string $version = null
-    ): string {
-        $config = $this->getBundleComposerConfiguration($bundle);
-
-        if (!$version) {
-            $version = $config->version;
-        }
-
-        // Version increment
-        $config->version = BundleHelper::defaultVersionIncrement(
-            $version,
-            $upgradeType,
-            $increment,
-            $build
-        );
-
-        $this->savePackageComposerConfiguration(
-            $this->getBundleRootPath($bundle),
-            $config
-        );
-
-        return $config->version;
     }
 }

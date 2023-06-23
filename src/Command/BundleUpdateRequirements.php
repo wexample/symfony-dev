@@ -7,18 +7,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class BundleUpdateAll extends AbstractDevCommand
+class BundleUpdateRequirements extends AbstractDevCommand
 {
     protected function execute(
         InputInterface $input,
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
+        $updated = $this->bundleService->updateAllRequirementsVersions();
 
-        $this->bundleService->updateAllLocalPackages();
-
-        foreach ($this->bundleService->updateAllLocalPackages() as $path => $version) {
-            $io->success('Updated package '.$path.' to '.$version);
+        foreach ($updated as $name => $path) {
+            $io->success('Updated package '.$name);
         }
 
         return Command::SUCCESS;
