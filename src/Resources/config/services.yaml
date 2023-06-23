@@ -4,6 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Wexample\SymfonyDev\Command\:
-        resource: '../../Command/*'
-        tags: ['console.command']
+    Wexample\SymfonyDev\:
+        resource: '../../{Command,Service}'
+        tags: ['controller.service_arguments']

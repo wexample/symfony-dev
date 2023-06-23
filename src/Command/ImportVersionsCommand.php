@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyDev\Command;
 
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,11 +10,7 @@ use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
-#[AsCommand(
-    name: 'dev:import-versions',
-    description: 'Get the vendor-local last versions and place it in the app composer.json file',
-)]
-class DevImportVersionsCommand extends AbstractDevCommand
+class ImportVersionsCommand extends AbstractDevCommand
 {
     protected function execute(
         InputInterface $input,

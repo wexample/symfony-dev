@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyDev\Command;
 
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,11 +11,7 @@ use Symfony\Component\Process\Process;
 use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 
-#[AsCommand(
-    name: 'dev:setup',
-    description: 'Prepare local development environment',
-)]
-class DevSetupCommand extends AbstractDevCommand
+class SetupCommand extends AbstractDevCommand
 {
     protected function execute(
         InputInterface $input,
@@ -61,7 +56,7 @@ class DevSetupCommand extends AbstractDevCommand
         $process = new Process([
             'php',
             'bin/console',
-            'cache:clear'
+            'cache:clear',
         ]);
 
         $process->run();

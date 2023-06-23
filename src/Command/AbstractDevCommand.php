@@ -2,18 +2,30 @@
 
 namespace Wexample\SymfonyDev\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Wexample\SymfonyDev\Helper\DevHelper;
+use Wexample\SymfonyDev\Service\BundleService;
+use Wexample\SymfonyDev\WexampleSymfonyDevBundle;
+use Wexample\SymfonyHelpers\Command\AbstractBundleCommand;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
-abstract class AbstractDevCommand extends Command
+abstract class AbstractDevCommand extends AbstractBundleCommand
 {
     public function __construct(
-        protected readonly KernelInterface $kernel,
+        protected KernelInterface $kernel,
+        BundleService $bundleService,
+        string $name = null,
     ) {
-        parent::__construct();
+        parent::__construct(
+            $bundleService,
+            $name
+        );
+    }
+
+    public static function getBundleClassName(): string
+    {
+        return WexampleSymfonyDevBundle::class;
     }
 
     protected function forEachDevPackage(callable $callback): void
