@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 
@@ -56,6 +57,14 @@ class DevSetupCommand extends AbstractDevCommand
         } else {
             $io->note('Skipping setup for non-local environment.');
         }
+
+        $process = new Process([
+            'php',
+            'bin/console',
+            'cache:clear'
+        ]);
+
+        $process->run();
 
         return Command::SUCCESS;
     }
