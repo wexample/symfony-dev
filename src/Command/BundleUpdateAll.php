@@ -21,6 +21,16 @@ class BundleUpdateAll extends AbstractDevCommand
             $io->success('Updated package '.$path.' to '.$version);
         }
 
+        $this->execCommand(
+            BundleUpdateRequirements::class,
+            $output
+        );
+
+        $this->execCommand(
+            ImportVersionsCommand::class,
+            $output
+        );
+
         return Command::SUCCESS;
     }
 }

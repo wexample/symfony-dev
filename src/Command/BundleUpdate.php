@@ -82,6 +82,16 @@ class BundleUpdate extends AbstractDevCommand
             $io->success('New version for '.$bundleName.' : '.$newVersion);
         }
 
+        $this->execCommand(
+            BundleUpdateRequirements::class,
+            $output
+        );
+
+        $this->execCommand(
+            ImportVersionsCommand::class,
+            $output
+        );
+
         return Command::SUCCESS;
     }
 }
