@@ -44,7 +44,7 @@ class ImportVersionsCommand extends AbstractDevCommand
             json_encode($appConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
 
-        unlink(
+        FileHelper::deleteFileIfExists(
             $this->kernel->getProjectDir() . '/composer.lock'
         );
 
