@@ -79,7 +79,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
             if ($vendor[0] !== '.') {
                 $vendorDir = $vendorsDir.$vendor.'/';
                 foreach (scandir($vendorDir) as $package) {
-                    if ($package[0] !== '.') {
+                    if ($package[0] !== '.' && is_dir($vendorDir.$package)) {
                         $packages[$vendor.'/'.$package] = $vendorDir.$package.'/';
                     }
                 }
