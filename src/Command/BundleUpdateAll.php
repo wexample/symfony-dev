@@ -15,8 +15,6 @@ class BundleUpdateAll extends AbstractDevCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
 
-        $this->bundleService->updateAllLocalPackages();
-
         foreach ($this->bundleService->updateAllLocalPackages() as $path => $version) {
             $io->success('Updated package '.$path.' to '.$version);
         }
