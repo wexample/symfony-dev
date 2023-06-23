@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyDev\Service;
 
+use Symfony\Component\Finder\Finder;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
@@ -71,19 +72,15 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
 
     public function getAllLocalPackagesPaths(): array
     {
-        $vendorsDir = $this->kernel->getProjectDir().'/vendor-local/';
-        $vendors = scandir($vendorsDir);
+        $vendorsDir = $this->kernel->getProjectDir() . '/vendor-local/';
+        $finder = new Finder();
+
+        $finder->directories()->in($vendorsDir)->depth('== 1');
 
         $packages = [];
-        foreach ($vendors as $vendor) {
-            if ($vendor[0] !== '.') {
-                $vendorDir = $vendorsDir.$vendor.'/';
-                foreach (scandir($vendorDir) as $package) {
-                    if ($package[0] !== '.' && is_dir($vendorDir.$package)) {
-                        $packages[$vendor.'/'.$package] = $vendorDir.$package.'/';
-                    }
-                }
-            }
+        foreach ($finder as $file) {
+            $path = $file->getRealPath().'/';
+            $packages[$this->getPackageComposerConfiguration($path)->name] = $path;
         }
 
         return $packages;
