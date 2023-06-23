@@ -36,7 +36,7 @@ class ImportVersionsCommand extends AbstractDevCommand
             $packageName = $config->name;
             $appConfig->require->$packageName = '^'.$config->version;
 
-            $io->info('App require now '.$config->name.' at version '.$config->version);
+            $io->success('App require now '.$config->name.' at version '.$config->version);
         });
 
         file_put_contents(
