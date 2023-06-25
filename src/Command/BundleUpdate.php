@@ -8,17 +8,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Wexample\SymfonyDev\Command\Traits\WithArgPackage;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class BundleUpdate extends AbstractDevCommand
 {
+    use WithArgPackage;
+
     protected function configure(): void
     {
-        $this
-            ->addArgument(
-                'bundleName',
-                InputArgument::REQUIRED,
-                'Bundle name');
+        $this->configurePackageArg(
+            InputArgument::REQUIRED
+        );
 
         $this->addOption(
             'upgradeType',
@@ -52,7 +53,7 @@ class BundleUpdate extends AbstractDevCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
 
-        $bundleName = $input->getArgument('bundleName');
+        $bundleName = $this->getPackageArg($input);
         if (!$bundle = $this->bundleService->getBundleIfExists(
             BundleHelper::buildClassNameFromPackageName($bundleName)
         )) {
