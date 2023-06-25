@@ -24,11 +24,6 @@ class BundleUpdateAll extends AbstractDevCommand
             $output
         );
 
-        $this->execCommand(
-            ImportVersionsCommand::class,
-            $output
-        );
-
         return Command::SUCCESS;
     }
 }
