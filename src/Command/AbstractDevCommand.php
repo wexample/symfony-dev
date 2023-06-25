@@ -71,4 +71,36 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
             DevHelper::DEV_COMPANY_NAME,
         ]);
     }
+
+    protected function writeAppComposerConfig(
+        $config,
+        bool $removeLockFile = false
+    ): void {
+        file_put_contents(
+            $this->getAppComposerConfigPath(),
+            json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+        );
+
+        if ($removeLockFile) {
+            FileHelper::deleteFileIfExists(
+                $this->kernel->getProjectDir().'/composer.lock'
+            );
+        }
+    }
+
+    protected function getAppComposerConfigPath(): string
+    {
+        return FileHelper::joinPathParts([
+            $this->kernel->getProjectDir(),
+            BundleHelper::COMPOSER_JSON_FILE_NAME,
+        ]);
+    }
+
+    protected function getAppComposerConfig(int $flags = null): array|object
+    {
+        return JsonHelper::read(
+            $this->getAppComposerConfigPath(),
+            $flags
+        );
+    }
 }
