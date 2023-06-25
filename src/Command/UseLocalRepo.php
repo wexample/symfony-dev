@@ -18,14 +18,13 @@ class UseLocalRepo extends AbstractDevCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
         $appConfig = self::getAppComposerConfig(JSON_OBJECT_AS_ARRAY);
+        $localPackagesPaths = $this->bundleService->getAllLocalPackagesPaths();
 
         $path = $this->bundleService->getBundleRootPath(WexampleSymfonyDevBundle::class);
         $configToAdd = JsonHelper::read(
             $path.'src/Resources/composer/local.json',
             JSON_OBJECT_AS_ARRAY
         );
-
-        $localPackagesPaths = $this->bundleService->getAllLocalPackagesPaths();
 
         // Merge $configToAdd into $appConfig
         $appConfig = array_merge_recursive($appConfig, $configToAdd);
