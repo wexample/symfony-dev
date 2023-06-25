@@ -18,7 +18,7 @@ trait WithArgPackage
             );
     }
 
-    protected function getPackageArg(InputInterface $input): string
+    protected function getPackageArg(InputInterface $input): ?string
     {
         return $input->getArgument(
             self::ARGUMENT_NAME_PACKAGE_NAME
