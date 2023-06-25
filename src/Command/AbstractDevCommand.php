@@ -7,6 +7,7 @@ use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyDev\Service\BundleService;
 use Wexample\SymfonyDev\WexampleSymfonyDevBundle;
 use Wexample\SymfonyHelpers\Command\AbstractBundleCommand;
+use Wexample\SymfonyHelpers\Helper\BundleHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
@@ -40,7 +41,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
         foreach (glob($localVendorPath.'/*', GLOB_ONLYDIR) as $localPackagePath) {
             $composerFile = FileHelper::joinPathParts([
                 $localPackagePath,
-                DevHelper::COMPOSER_JSON_FILE_NAME,
+                BundleHelper::COMPOSER_JSON_FILE_NAME,
             ]);
 
             // Only returns valid packages.
