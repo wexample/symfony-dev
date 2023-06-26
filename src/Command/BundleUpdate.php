@@ -54,8 +54,9 @@ class BundleUpdate extends AbstractDevCommand
         $io = new SymfonyStyle($input, $output);
 
         $bundleName = $this->getPackageArg($input);
-        if (!$bundle = $this->bundleService->getBundleIfExists(
-            BundleHelper::buildClassNameFromPackageName($bundleName)
+        if (!$bundle = BundleHelper::getBundle(
+            BundleHelper::buildClassNameFromPackageName($bundleName),
+            $this->kernel
         )) {
             $io->error('Bundle not found '.$bundleName);
 
@@ -74,7 +75,7 @@ class BundleUpdate extends AbstractDevCommand
         $version = $input->getOption('version-number');
 
         if ($newVersion = $this->bundleService->versionBuild(
-            $this->bundleService->getBundleRootPath($bundle),
+            BundleHelper::getBundleRootPath($bundle, $this->kernel),
             $upgradeType,
             $increment,
             $build,

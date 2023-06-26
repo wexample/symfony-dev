@@ -3,10 +3,17 @@
 namespace Wexample\SymfonyDev\Service;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
-class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
+class BundleService
 {
+    public function __construct(
+        protected KernelInterface $kernel,
+    ) {
+
+    }
+
     /**
      * Increment every package and update dependencies.
      * @return array
@@ -18,7 +25,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
 
         foreach ($paths as $path) {
             if ($newVersion = $this->versionBuild($path)) {
-                $output[$this->getPackageComposerConfiguration($path)->name] = $newVersion;
+                $output[BundleHelper::getPackageComposerConfiguration($path)->name] = $newVersion;
             }
         }
 
@@ -34,7 +41,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
         bool $build = false,
         string $version = null
     ): string {
-        $config = $this->getPackageComposerConfiguration($packagePath);
+        $config = BundleHelper::getPackageComposerConfiguration($packagePath);
 
         if (!$version) {
             $version = $config->version;
@@ -48,7 +55,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
             $build
         );
 
-        $this->savePackageComposerConfiguration(
+        BundleHelper::savePackageComposerConfiguration(
             $packagePath,
             $config
         );
@@ -80,7 +87,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
         $packages = [];
         foreach ($finder as $file) {
             $path = $file->getRealPath().'/';
-            $packages[$this->getPackageComposerConfiguration($path)->name] = $path;
+            $packages[BundleHelper::getPackageComposerConfiguration($path)->name] = $path;
         }
 
         return $packages;
@@ -89,13 +96,13 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
     public function updateRequirementVersion(string $packagePath): array
     {
         $packages = $this->getAllLocalPackagesPaths();
-        $config = $this->getPackageComposerConfiguration($packagePath);
+        $config = BundleHelper::getPackageComposerConfiguration($packagePath);
         $packageName = $config->name;
         $updated = [];
 
         foreach ($packages as $packageNameDest => $packageDestPath) {
             if ($packageNameDest !== $packageName) {
-                $configDest = $this->getPackageComposerConfiguration($packageDestPath);
+                $configDest = BundleHelper::getPackageComposerConfiguration($packageDestPath);
                 $changed = false;
                 $newVersion = '^'.$config->version;
 
@@ -113,7 +120,7 @@ class BundleService extends \Wexample\SymfonyHelpers\Service\BundleService
                 }
 
                 if ($changed) {
-                    $this->savePackageComposerConfiguration(
+                    BundleHelper::savePackageComposerConfiguration(
                         $packageDestPath,
                         $configDest
                     );
