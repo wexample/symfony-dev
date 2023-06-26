@@ -36,9 +36,8 @@ class RemoveLocalRepo extends AbstractDevCommand
             }
 
             // If it exists, remove the preferred-install config
-            $preferredInstallKey = $group."/*";
-            if (isset($appConfig['config']['preferred-install'][$preferredInstallKey])) {
-                unset($appConfig['config']['preferred-install'][$preferredInstallKey]);
+            if (isset($appConfig['config']['preferred-install'][$packageName])) {
+                unset($appConfig['config']['preferred-install'][$packageName]);
             }
         }
 

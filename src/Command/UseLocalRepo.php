@@ -6,9 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Wexample\SymfonyDev\WexampleSymfonyDevBundle;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
-use Wexample\SymfonyHelpers\Helper\JsonHelper;
 
 class UseLocalRepo extends AbstractDevCommand
 {
@@ -18,19 +16,12 @@ class UseLocalRepo extends AbstractDevCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
         $appConfig = self::getAppComposerConfig(JSON_OBJECT_AS_ARRAY);
+        $appConfig['repositories'] = $appConfig['repositories'] ?? [];
         $localPackagesPaths = $this->bundleService->getAllLocalPackagesPaths();
-
-        $path = $this->bundleService->getBundleRootPath(WexampleSymfonyDevBundle::class);
-        $configToAdd = JsonHelper::read(
-            $path.'src/Resources/composer/local.json',
-            JSON_OBJECT_AS_ARRAY
-        );
-
-        // Merge $configToAdd into $appConfig
-        $appConfig = array_merge_recursive($appConfig, $configToAdd);
 
         // Transform existing repositories into associative array
         $existingRepos = [];
+
         foreach ($appConfig['repositories'] as $repo) {
             $existingRepos[$repo['url']] = $repo;
         }
@@ -46,6 +37,8 @@ class UseLocalRepo extends AbstractDevCommand
 
             // If it doesn't exist, add the repository
             $existingRepos[$repository['url']] = $repository;
+
+            $appConfig['config']['preferred-install'][$packageName] = 'source';
         }
 
         // Convert the associative array back to indexed array
@@ -55,7 +48,7 @@ class UseLocalRepo extends AbstractDevCommand
             $appConfig
         );
 
-        $io->success('Local packages imported in ' . BundleHelper::COMPOSER_JSON_FILE_NAME);
+        $io->success('Local packages imported in '.BundleHelper::COMPOSER_JSON_FILE_NAME);
 
         return Command::SUCCESS;
     }
