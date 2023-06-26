@@ -76,9 +76,10 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
         $config,
         bool $removeLockFile = false
     ): void {
-        file_put_contents(
+        JsonHelper::write(
             $this->getAppComposerConfigPath(),
-            json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            $config,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
 
         if ($removeLockFile) {
