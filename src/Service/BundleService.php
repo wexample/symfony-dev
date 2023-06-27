@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyDev\Service;
+namespace Wexample\SymfonyHelpers\Service;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
