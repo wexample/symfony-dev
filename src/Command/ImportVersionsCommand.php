@@ -26,11 +26,10 @@ class ImportVersionsCommand extends AbstractDevCommand
         $filterPackageName = $this->getPackageArg($input);
         $appConfig = self::getAppComposerConfig();
 
-        $this->forEachDevPackage(function(
+        $this->forEachDevPackage(function (
             string $packageName,
             object $config
-        ) use
-        (
+        ) use (
             $appConfig,
             $io,
             $filterPackageName

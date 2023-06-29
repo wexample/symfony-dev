@@ -19,14 +19,13 @@ class SetupCommand extends AbstractDevCommand
         $io = new SymfonyStyle($input, $output);
         $env = $_ENV['CONTAINER_ENV'] ?? EnvironmentHelper::PROD;
 
-        if ($env === EnvironmentHelper::LOCAL) {
+        if (EnvironmentHelper::LOCAL === $env) {
             $vendorPath = $this->getCompanyVendorPath();
 
             // Get all the directories in the local vendor folder
-            $this->forEachDevPackage(function(
+            $this->forEachDevPackage(function (
                 string $packageName
-            ) use
-            (
+            ) use (
                 $vendorPath,
                 $io
             ) {

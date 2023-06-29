@@ -44,7 +44,6 @@ class BundleUpdate extends AbstractDevCommand
                 'vn',
                 InputOption::VALUE_OPTIONAL,
                 'Version number');
-
     }
 
     protected function execute(
@@ -67,6 +66,7 @@ class BundleUpdate extends AbstractDevCommand
 
         if (!in_array($upgradeType, BundleHelper::UPGRADE_TYPES)) {
             $io->error('Unsupported release type '.$upgradeType);
+
             return Command::FAILURE;
         }
 

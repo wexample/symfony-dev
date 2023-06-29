@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 trait WithArgPackage
 {
-    const ARGUMENT_NAME_PACKAGE_NAME = 'packageName';
+    public const ARGUMENT_NAME_PACKAGE_NAME = 'packageName';
 
     protected function configurePackageArg(int $mode = null): void
     {

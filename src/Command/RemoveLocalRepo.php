@@ -28,7 +28,7 @@ class RemoveLocalRepo extends AbstractDevCommand
         foreach ($localPackagesPaths as $packageName => $packagePath) {
             $group = dirname($packageName);
 
-            $repositoryUrl = "./vendor-local/".$group."/*";
+            $repositoryUrl = './vendor-local/'.$group.'/*';
 
             // If it exists, remove the repository
             if (isset($existingRepos[$repositoryUrl])) {

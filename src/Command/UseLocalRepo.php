@@ -31,8 +31,8 @@ class UseLocalRepo extends AbstractDevCommand
             $group = dirname($packageName);
 
             $repository = [
-                "type" => "path",
-                "url" => "./vendor-local/".$group."/*",
+                'type' => 'path',
+                'url' => './vendor-local/'.$group.'/*',
             ];
 
             // If it doesn't exist, add the repository

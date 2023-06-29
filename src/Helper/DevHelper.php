@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Wexample\SymfonyDev\Helper;
 
 class DevHelper
