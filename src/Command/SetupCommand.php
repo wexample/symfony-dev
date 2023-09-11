@@ -23,9 +23,10 @@ class SetupCommand extends AbstractDevCommand
             $vendorPath = $this->getCompanyVendorPath();
 
             // Get all the directories in the local vendor folder
-            $this->forEachDevPackage(function (
+            $this->forEachDevPackage(function(
                 string $packageName
-            ) use (
+            ) use
+            (
                 $vendorPath,
                 $io
             ) {
