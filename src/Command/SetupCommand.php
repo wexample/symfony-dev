@@ -44,7 +44,7 @@ class SetupCommand extends AbstractDevCommand
                 // Create a symbolic link in the vendor directory to the local directory
                 $fs->symlink($localPackagePath, $vendorPackagePath);
 
-                $io->success('Created symlink from '.$vendorPackagePath.' to '.$vendorPackagePath);
+                $io->success('Created symlink from '.$localPackagePath.' to '.$vendorPackagePath);
             });
 
             $io->success('Local development environment is set up.');
