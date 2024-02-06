@@ -20,6 +20,6 @@
         "wexample/symfony-helpers": "^0.1.91"
     },
     "require-dev": {
-        "rector/rector": "^0.19.8"
+        "rector/rector": "0.14.5"
     }
 }
