@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use App\Service\Syntax\ControllerSyntaxService;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ConstFetch;
@@ -16,6 +15,7 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\MethodRectorTrait;
+use Wexample\SymfonyHelpers\Service\Syntax\ControllerSyntaxService;
 
 class TestControllerHasMethodsRector extends AbstractRector
 {

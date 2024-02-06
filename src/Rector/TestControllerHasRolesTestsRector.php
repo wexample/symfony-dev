@@ -3,7 +3,6 @@
 namespace Wexample\SymfonyDev\Rector;
 
 use App\Helper\RoleHelper;
-use App\Service\Syntax\ControllerSyntaxService;
 use App\Tests\Integration\Role\AbstractRoleTestCase;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;

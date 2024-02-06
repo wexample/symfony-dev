@@ -3,8 +3,6 @@
 namespace Wexample\SymfonyDev\Rector\Traits;
 
 use App\Helper\RoleHelper;
-use App\Service\Syntax\ControllerSyntaxService;
-use App\Tests\Integration\Role\AbstractRoleTestCase;
 use App\Wex\BaseBundle\Api\Controller\AbstractApiController;
 use App\Wex\BaseBundle\Api\Controller\AbstractApiEntityController;
 use App\Wex\BaseBundle\Controller\AbstractController;
@@ -16,6 +14,9 @@ use ReflectionClass;
 use ReflectionMethod;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\SymfonyHelpers\Service\Syntax\ControllerSyntaxService;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
+use Wexample\SymfonyTesting\Tests\AbstractRoleTestCase;
 
 trait ControllerRectorTrait
 {
@@ -128,7 +129,7 @@ trait ControllerRectorTrait
         if ($this->isControllerTestClass($testControllerNode)) {
             $name = $this->getName($testControllerNode);
 
-            $controllerClassPath = AbstractRoleTestCase::buildControllerClassPath(
+            $controllerClassPath = AbstractRoleControllerTestCase::buildControllerClassPath(
                 $name
             );
 
