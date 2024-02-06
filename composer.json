@@ -20,6 +20,7 @@
         "wexample/symfony-helpers": "^0.1.91"
     },
     "require-dev": {
-        "rector/rector": "0.14.5"
+        "rector/rector": "0.12.28",
+        "phpstan/phpdoc-parser": "1.25.0"
     }
 }
