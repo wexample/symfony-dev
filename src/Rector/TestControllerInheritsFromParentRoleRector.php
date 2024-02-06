@@ -50,7 +50,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
                 $parentClass = AbstractRoleControllerTestCase::class;
             } else {
                 $parentClass = $this->buildControllerTestRoleBaseClassPath($parentRole)
-                    .$this->trimControllerTestToleBaseClassPath(
+                    .$this->trimControllerTestToBaseClassPath(
                         $this->getName($node)
                     );
             }
@@ -68,7 +68,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
         }
     }
 
-    protected function trimControllerTestToleBaseClassPath(string $classPath): string
+    protected function trimControllerTestToBaseClassPath(string $classPath): string
     {
         $trimmed = TextHelper::trimStringPrefix(
             ClassHelper::NAMESPACE_SEPARATOR.$classPath,
