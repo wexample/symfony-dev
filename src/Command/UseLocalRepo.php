@@ -16,7 +16,7 @@ class UseLocalRepo extends AbstractDevCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
         $appConfig = self::getAppComposerConfig(JSON_OBJECT_AS_ARRAY);
-        $appConfig['repositories'] = $appConfig['repositories'] ?? [];
+        $appConfig['repositories'] ??= [];
         $localPackagesPaths = $this->bundleService->getAllLocalPackagesPaths();
 
         // Transform existing repositories into associative array
