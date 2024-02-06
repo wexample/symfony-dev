@@ -9,7 +9,7 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\MethodRectorTrait;
-use Wexample\SymfonyTesting\Helper\TestControllerHelper;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
 class TestControllerHasNoOrphanMethodsRector extends AbstractRector
 {
@@ -40,14 +40,12 @@ class TestControllerHasNoOrphanMethodsRector extends AbstractRector
     {
         if ($this->isControllerTestClass($node)) {
             $hasChange = false;
+            /** @var AbstractRoleControllerTestCase $name */
             $name = $this->getName($node);
 
-            $controllerReflexion = new ReflectionClass(
-                TestControllerHelper::buildControllerClassPath(
-                    $name
-                )
-            );
+            $controllerReflexion = new ReflectionClass($name::getControllerClass());
             $testControllerReflexion = new ReflectionClass($name);
+
             $methods = $testControllerReflexion->getMethods();
 
             foreach ($methods as $method) {
