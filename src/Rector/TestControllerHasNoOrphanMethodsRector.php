@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use App\Tests\Integration\Role\AbstractRoleTestCase;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use ReflectionClass;
@@ -10,6 +9,7 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\MethodRectorTrait;
+use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 
 class TestControllerHasNoOrphanMethodsRector extends AbstractRector
 {
@@ -43,7 +43,7 @@ class TestControllerHasNoOrphanMethodsRector extends AbstractRector
             $name = $this->getName($node);
 
             $controllerReflexion = new ReflectionClass(
-                AbstractRoleTestCase::buildControllerClassPath(
+                TestControllerHelper::buildControllerClassPath(
                     $name
                 )
             );

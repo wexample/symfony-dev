@@ -15,6 +15,7 @@ use ReflectionMethod;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
 use Wexample\SymfonyHelpers\Service\Syntax\ControllerSyntaxService;
+use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 use Wexample\SymfonyTesting\Tests\AbstractRoleTestCase;
 
@@ -95,7 +96,7 @@ trait ControllerRectorTrait
 
     protected function getControllerTestRole(Node $node): ?string
     {
-        $basePath = AbstractRoleTestCase::getRoleTestClassBasePath();
+        $basePath = AbstractRoleControllerTestCase::APPLICATION_ROLE_TEST_CLASS_PATH;
         $classPath = $this->getName($node);
 
         if (str_starts_with(ClassHelper::NAMESPACE_SEPARATOR.$classPath, $basePath)) {
@@ -117,7 +118,7 @@ trait ControllerRectorTrait
         $parentRoleClass = RoleHelper::getRoleNamePartAsClass($role);
 
         return
-            AbstractRoleTestCase::getRoleTestClassBasePath()
+            AbstractRoleControllerTestCase::APPLICATION_ROLE_TEST_CLASS_PATH
             .$parentRoleClass
             .ClassHelper::NAMESPACE_SEPARATOR;
     }
@@ -129,7 +130,7 @@ trait ControllerRectorTrait
         if ($this->isControllerTestClass($testControllerNode)) {
             $name = $this->getName($testControllerNode);
 
-            $controllerClassPath = AbstractRoleControllerTestCase::buildControllerClassPath(
+            $controllerClassPath = TestControllerHelper::buildControllerClassPath(
                 $name
             );
 
