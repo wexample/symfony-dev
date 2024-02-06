@@ -2,8 +2,6 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use App\Helper\RoleHelper;
-use App\Tests\Integration\Role\AbstractRoleTestCase;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use Rector\Core\Application\FileSystem\RemovedAndAddedFilesCollector;
@@ -18,7 +16,10 @@ use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
+use Wexample\SymfonyHelpers\Helper\RoleHelper;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\SymfonyTesting\Helper\TestControllerHelper;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
 class TestControllerHasRolesTestsRector extends AbstractRector
 {
@@ -42,7 +43,7 @@ class TestControllerHasRolesTestsRector extends AbstractRector
             'Ensure controller has all tests files',
             [
                 new CodeSample(
-                    // code before
+                // code before
                     'Missing ControllerTest files',
                     // code after
                     'All ControllerTest files exists'
@@ -62,34 +63,38 @@ class TestControllerHasRolesTestsRector extends AbstractRector
             && !$this->getFirstAttributeNode(
                 $node,
                 RectorIgnoreControllerRoleTest::class,
-            )) {
-            foreach (RoleHelper::ROLES as $role) {
+            )
+        ) {
+            // We should find a way to add more tested roles here.
+            foreach ([RoleHelper::ROLE_ANONYMOUS] as $role) {
                 $parentRole = $this->getParentRole($role);
                 $roleClass = RoleHelper::getRoleNamePartAsClass($role);
                 $controllerClass = $this->getReflexion($node)->getName();
 
                 if ($parentRole) {
-                    $parentTestClass = AbstractRoleTestCase::buildTestControllerClassPath(
+                    $parentTestClass = TestControllerHelper::buildTestControllerClassPath(
                         $controllerClass,
-                        $parentRole
-                    );
+                        $parentRole,
+                        checkExists: false
+                    ) ?? AbstractRoleControllerTestCase::class;
                 } else {
-                    $parentTestClass = AbstractRoleTestCase::getRoleTestClassBasePath()
-                        .ClassHelper::getShortName(AbstractRoleTestCase::class);
+                    $parentTestClass = AbstractRoleControllerTestCase::class;
                 }
 
-                $classPath = AbstractRoleTestCase::buildTestControllerClassPath(
+                $classPath = TestControllerHelper::buildTestControllerClassPath(
                     $controllerClass,
-                    $role
+                    $role,
+                    checkExists: false
                 );
 
-                $filePathTest = getcwd().FileHelper::FOLDER_SEPARATOR
-                    .ClassHelper::buildClassFilePath(
-                        $classPath,
-                        ClassHelper::DIR_TESTS
-                    );
+                if (!class_exists($classPath)) {
+                    # Guess a path
+                    $filePathTest = getcwd().FileHelper::FOLDER_SEPARATOR
+                        .ClassHelper::buildClassFilePath(
+                            $classPath,
+                            ClassHelper::DIR_TESTS
+                        );
 
-                if (!file_exists($filePathTest)) {
                     $content = ClassHelper::PHP_OPENER.
                         $this->renderTemplate(getcwd()
                             .'/front/php/Controller/Test.html.twig', [

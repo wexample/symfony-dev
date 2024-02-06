@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use App\Tests\Integration\Role\AbstractRoleTestCase;
 use PhpParser\Node;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\Class_;
@@ -10,9 +9,10 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
-use Wexample\SymfonyHelpers\Helper\AbstractRoleHelper;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\SymfonyHelpers\Helper\RoleHelper;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
 class TestControllerInheritsFromParentRoleRector extends AbstractRector
 {
@@ -39,16 +39,15 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
 
     public function refactor(Node $node)
     {
-        if ($this->isTestControllerClass($node)
-            && $role = $this->getControllerTestRole($node)) {
+        if ($role = $this->getControllerTestRole($node)) {
             $parentRole = $this->getParentRole($role);
 
-            if (!$parentRole && AbstractRoleHelper::ROLE_ANONYMOUS !== $role) {
-                $parentRole = AbstractRoleHelper::ROLE_ANONYMOUS;
+            if (!$parentRole && RoleHelper::ROLE_ANONYMOUS !== $role) {
+                $parentRole = RoleHelper::ROLE_ANONYMOUS;
             }
 
             if (!$parentRole) {
-                $parentClass = AbstractRoleTestCase::class;
+                $parentClass = AbstractRoleControllerTestCase::class;
             } else {
                 $parentClass = $this->buildControllerTestRoleBaseClassPath($parentRole)
                     .$this->trimControllerTestToleBaseClassPath(
@@ -73,7 +72,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
     {
         $trimmed = TextHelper::trimStringPrefix(
             ClassHelper::NAMESPACE_SEPARATOR.$classPath,
-            AbstractRoleTestCase::getRoleTestClassBasePath()
+            AbstractRoleControllerTestCase::getRoleTestClassBasePath()
         );
 
         $parts = explode(ClassHelper::NAMESPACE_SEPARATOR, $trimmed);

@@ -2,22 +2,22 @@
 
 namespace Wexample\SymfonyDev\Rector\Traits;
 
-use App\Helper\RoleHelper;
 use App\Wex\BaseBundle\Api\Controller\AbstractApiController;
 use App\Wex\BaseBundle\Api\Controller\AbstractApiEntityController;
-use App\Wex\BaseBundle\Controller\AbstractController;
+use Exception;
 use JetBrains\PhpStorm\Pure;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use ReflectionClass;
 use ReflectionMethod;
+use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\SymfonyHelpers\Helper\RoleHelper;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
 use Wexample\SymfonyHelpers\Service\Syntax\ControllerSyntaxService;
 use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
-use Wexample\SymfonyTesting\Tests\AbstractRoleTestCase;
 
 trait ControllerRectorTrait
 {
@@ -44,8 +44,8 @@ trait ControllerRectorTrait
         $parentClassNode = $this->getParentClassNode($node);
 
         if ($parentClassNode && $this->isInstanceOfAbstractControllerClass(
-            $parentClassNode
-        )) {
+                $parentClassNode
+            )) {
             return $this->getNodeMethod($node);
         }
 
@@ -86,31 +86,15 @@ trait ControllerRectorTrait
             && $node->isFinal();
     }
 
-    protected function isTestControllerClass(Node $node): bool
-    {
-        return is_subclass_of(
-            $this->getReflexion($node)->getNativeReflection()->getName(),
-            AbstractRoleTestCase::class
-        );
-    }
-
     protected function getControllerTestRole(Node $node): ?string
     {
-        $basePath = AbstractRoleControllerTestCase::APPLICATION_ROLE_TEST_CLASS_PATH;
-        $classPath = $this->getName($node);
-
-        if (str_starts_with(ClassHelper::NAMESPACE_SEPARATOR.$classPath, $basePath)) {
-            return
-                'ROLE_'
-                .strtoupper(
-                    explode(
-                        ClassHelper::NAMESPACE_SEPARATOR,
-                        TextHelper::trimStringPrefix($classPath, $basePath)
-                    )[4]
-                );
+        if (!$this->isControllerTestClass($node)) {
+            return null;
         }
 
-        return null;
+        return TestControllerHelper::buildControllerRoleName(
+            $this->getName($node)
+        );
     }
 
     protected function buildControllerTestRoleBaseClassPath(string $role): string
@@ -123,6 +107,9 @@ trait ControllerRectorTrait
             .ClassHelper::NAMESPACE_SEPARATOR;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function forEachTestableOriginalControllerMethod(
         Node $testControllerNode,
         callable $callback
@@ -130,9 +117,11 @@ trait ControllerRectorTrait
         if ($this->isControllerTestClass($testControllerNode)) {
             $name = $this->getName($testControllerNode);
 
-            $controllerClassPath = TestControllerHelper::buildControllerClassPath(
+            if (!$controllerClassPath = TestControllerHelper::buildControllerClassPath(
                 $name
-            );
+            )) {
+                return null;
+            }
 
             $hasChange = false;
 
