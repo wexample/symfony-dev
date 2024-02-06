@@ -2,17 +2,16 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use App\Wex\BaseBundle\Entity\AbstractEntity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
-use Rector\Core\NodeManipulator\ClassInsertManipulator;
 use Rector\Core\PhpParser\AstResolver;
 use Rector\PhpAttribute\Printer\PhpAttributeGroupFactory;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\AttributeRectorTrait;
+use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class EntityHasConstantsAsPropertiesTypes extends AbstractRector
@@ -21,7 +20,6 @@ class EntityHasConstantsAsPropertiesTypes extends AbstractRector
 
     public function __construct(
         AstResolver $astResolver,
-        private readonly ClassInsertManipulator $classInsertManipulator,
         private readonly PhpAttributeGroupFactory $phpAttributeGroupFactory
     ) {
         parent::__construct($astResolver);
