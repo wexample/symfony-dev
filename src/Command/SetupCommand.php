@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
-use Wexample\SymfonyHelpers\Helper\FileHelper;
+use Wexample\SymfonyHelpers\Helper\PathHelper;
 
 class SetupCommand extends AbstractDevCommand
 {
@@ -32,9 +32,9 @@ class SetupCommand extends AbstractDevCommand
             ) {
                 $fs = new Filesystem();
                 $localVendorPath = $this->getCompanyVendorLocalPath();
-                $localPackagePath = FileHelper::joinPathParts([$localVendorPath, $packageName]);
+                $localPackagePath = PathHelper::join([$localVendorPath, $packageName]);
                 // Corresponding path in the vendor directory
-                $vendorPackagePath = FileHelper::joinPathParts([$vendorPath, $packageName]);
+                $vendorPackagePath = PathHelper::join([$vendorPath, $packageName]);
 
                 // Remove the existing directory in the vendor directory, if any
                 if ($fs->exists($vendorPackagePath)) {

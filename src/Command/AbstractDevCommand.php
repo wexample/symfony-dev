@@ -9,6 +9,7 @@ use Wexample\SymfonyHelpers\Command\AbstractBundleCommand;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\JsonHelper;
+use Wexample\SymfonyHelpers\Helper\PathHelper;
 use Wexample\SymfonyHelpers\Service\BundleService;
 
 abstract class AbstractDevCommand extends AbstractBundleCommand
@@ -36,7 +37,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
         $localVendorPath = $this->getCompanyVendorLocalPath();
 
         foreach (glob($localVendorPath.'/*', GLOB_ONLYDIR) as $localPackagePath) {
-            $composerFile = FileHelper::joinPathParts([
+            $composerFile = PathHelper::join([
                 $localPackagePath,
                 BundleHelper::COMPOSER_JSON_FILE_NAME,
             ]);
@@ -53,7 +54,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
 
     protected function getCompanyVendorLocalPath(): string
     {
-        return FileHelper::joinPathParts([
+        return PathHelper::join([
             $this->kernel->getProjectDir(),
             DevHelper::VENDOR_LOCAL_DIR_NAME,
             DevHelper::DEV_COMPANY_NAME,
@@ -62,7 +63,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
 
     protected function getCompanyVendorPath(): string
     {
-        return FileHelper::joinPathParts([
+        return PathHelper::join([
             $this->kernel->getProjectDir(),
             DevHelper::VENDOR_DIR_NAME,
             DevHelper::DEV_COMPANY_NAME,
@@ -88,7 +89,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
 
     protected function getAppComposerConfigPath(): string
     {
-        return FileHelper::joinPathParts([
+        return PathHelper::join([
             $this->kernel->getProjectDir(),
             BundleHelper::COMPOSER_JSON_FILE_NAME,
         ]);
