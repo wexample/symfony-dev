@@ -2,10 +2,7 @@
 
 namespace Wexample\SymfonyDev\Rector\Traits;
 
-use App\Wex\BaseBundle\Api\Controller\AbstractApiController;
-use App\Wex\BaseBundle\Api\Controller\AbstractApiEntityController;
 use Exception;
-use JetBrains\PhpStorm\Pure;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
