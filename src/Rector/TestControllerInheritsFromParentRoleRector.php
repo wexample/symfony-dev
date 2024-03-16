@@ -57,7 +57,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
 
             if (!is_subclass_of($this->getName($node), $parentClass)) {
                 $node->extends = new FullyQualified(
-                    TextHelper::trimStringPrefix(
+                    TextHelper::removePrefix(
                         $parentClass,
                         ClassHelper::NAMESPACE_SEPARATOR
                     )
@@ -70,7 +70,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
 
     protected function trimControllerTestToBaseClassPath(string $classPath): string
     {
-        $trimmed = TextHelper::trimStringPrefix(
+        $trimmed = TextHelper::removePrefix(
             ClassHelper::NAMESPACE_SEPARATOR.$classPath,
             AbstractRoleControllerTestCase::getRoleTestClassBasePath()
         );

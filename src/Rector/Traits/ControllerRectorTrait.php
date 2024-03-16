@@ -30,10 +30,9 @@ trait ControllerRectorTrait
             && str_starts_with($method->getName(), 'test');
     }
 
-    #[Pure]
     protected function buildOriginalTestMethodName(string $methodName): string
     {
-        return lcfirst(TextHelper::trimStringPrefix(
+        return lcfirst(TextHelper::removePrefix(
             $methodName,
             'test'
         ));

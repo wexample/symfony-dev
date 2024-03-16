@@ -37,7 +37,7 @@ class ControllerRouteNameHasNoControllerPrefixRector extends AbstractControllerM
             $routeName = $attribute->getArguments()[VariableHelper::NAME];
 
             if (str_starts_with($routeName, $controllerRoutePrefix)) {
-                $newRoute = TextHelper::trimStringPrefix($routeName, $controllerRoutePrefix);
+                $newRoute = TextHelper::removePrefix($routeName, $controllerRoutePrefix);
 
                 $this->setNodeAttributeArgValue(
                     $node,
