@@ -12,6 +12,14 @@ use Wexample\SymfonyHelpers\Helper\PathHelper;
 
 class SetupCommand extends AbstractDevCommand
 {
+    protected function configure(): void
+    {
+        parent::configure();
+
+        $this
+            ->setDescription('Sets up the local development environment by creating symlinks for local packages in the vendor directory.');
+    }
+
     protected function execute(
         InputInterface $input,
         OutputInterface $output

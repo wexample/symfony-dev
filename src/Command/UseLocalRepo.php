@@ -10,6 +10,13 @@ use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class UseLocalRepo extends AbstractDevCommand
 {
+    protected function configure()
+    {
+        parent::configure();
+        $this
+            ->setDescription('Imports local packages as path repositories into the composer.json file.');
+    }
+
     protected function execute(
         InputInterface $input,
         OutputInterface $output
