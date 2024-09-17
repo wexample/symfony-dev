@@ -25,7 +25,7 @@ class SetupCommand extends AbstractDevCommand
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
-        $env = $_ENV['CONTAINER_ENV'] ?? EnvironmentHelper::PROD;
+        $env = $_ENV['APP_HOST_ENV'] ?? EnvironmentHelper::PROD;
 
         if (EnvironmentHelper::LOCAL === $env) {
             $vendorPath = $this->getCompanyVendorPath();
@@ -57,7 +57,9 @@ class SetupCommand extends AbstractDevCommand
 
             $io->success('Local development environment is set up.');
         } else {
-            $io->note('Skipping setup for non-local environment.');
+            $io->note('Skipping setup for non-local environment: '
+                .$env
+                .'. Set APP_HOST_ENV=local in .env.local file to define development environment');
         }
 
         $this->execCommand(
