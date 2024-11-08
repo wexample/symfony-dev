@@ -13,6 +13,11 @@ class ImportVersionsCommand extends AbstractDevCommand
 {
     use WithArgPackage;
 
+    function getDescription(): string
+    {
+        return "Import latest custom packages versions to current composer configuration";
+    }
+
     protected function configure(): void
     {
         $this->configurePackageArg();

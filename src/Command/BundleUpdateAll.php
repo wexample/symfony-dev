@@ -9,6 +9,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BundleUpdateAll extends AbstractDevCommand
 {
+    function getDescription(): string
+    {
+        return "Updates all packages and dependencies versions";
+    }
+
     protected function execute(
         InputInterface $input,
         OutputInterface $output
