@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Wexample\SymfonyDev\:
+        resource: '../../{Command,Service}'
+        tags: ['controller.service_arguments']
