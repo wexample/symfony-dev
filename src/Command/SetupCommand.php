@@ -29,6 +29,8 @@ class SetupCommand extends AbstractDevCommand
 
         if (EnvironmentHelper::LOCAL === $env) {
             $vendorPath = $this->getCompanyVendorPath();
+            $localVendorPath = $this->getCompanyVendorLocalPath();
+            $fs = new Filesystem();
 
             // Get all the directories in the local vendor folder
             $this->forEachDevPackage(function(
@@ -36,14 +38,15 @@ class SetupCommand extends AbstractDevCommand
             ) use
             (
                 $vendorPath,
+                $localVendorPath,
+                $fs,
                 $io
             ) {
-                $fs = new Filesystem();
-                $localVendorPath = $this->getCompanyVendorLocalPath();
                 $localPackagePath = PathHelper::join([$localVendorPath, $packageName]);
-                // Corresponding path in the vendor directory
                 $vendorPackagePath = PathHelper::join([$vendorPath, $packageName]);
 
+            // Check if the local package directory exists
+            if ($fs->exists($localPackagePath)) {
                 // Remove the existing directory in the vendor directory, if any
                 if ($fs->exists($vendorPackagePath)) {
                     $fs->remove($vendorPackagePath);
@@ -53,6 +56,9 @@ class SetupCommand extends AbstractDevCommand
                 $fs->symlink($localPackagePath, $vendorPackagePath);
 
                 $io->success('Created symlink from '.$localPackagePath.' to '.$vendorPackagePath);
+            } else {
+                $io->warning('Local package directory does not exist: '.$localPackagePath);
+            }
             });
 
             $io->success('Local development environment is set up.');
