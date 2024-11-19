@@ -10,6 +10,11 @@ use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class RemoveLocalRepo extends AbstractDevCommand
 {
+    function getDescription(): string
+    {
+        return 'Remove local packages as path repositories into the composer.json file.';
+    }
+
     protected function execute(
         InputInterface $input,
         OutputInterface $output

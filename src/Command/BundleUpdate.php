@@ -15,6 +15,11 @@ class BundleUpdate extends AbstractDevCommand
 {
     use WithArgPackage;
 
+    function getDescription(): string
+    {
+        return "Updates one single package";
+    }
+
     protected function configure(): void
     {
         $this->configurePackageArg(
