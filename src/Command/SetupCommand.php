@@ -29,6 +29,8 @@ class SetupCommand extends AbstractDevCommand
 
         if (EnvironmentHelper::LOCAL === $env) {
             $vendorPath = $this->getCompanyVendorPath();
+            $localVendorPath = $this->getCompanyVendorLocalPath();
+            $fs = new Filesystem();
 
             // Get all the directories in the local vendor folder
             $this->forEachDevPackage(function(
@@ -36,12 +38,11 @@ class SetupCommand extends AbstractDevCommand
             ) use
             (
                 $vendorPath,
+                $localVendorPath,
+                $fs,
                 $io
             ) {
-                $fs = new Filesystem();
-                $localVendorPath = $this->getCompanyVendorLocalPath();
                 $localPackagePath = PathHelper::join([$localVendorPath, $packageName]);
-                // Corresponding path in the vendor directory
                 $vendorPackagePath = PathHelper::join([$vendorPath, $packageName]);
 
                 // Remove the existing directory in the vendor directory, if any
