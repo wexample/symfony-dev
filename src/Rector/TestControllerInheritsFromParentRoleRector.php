@@ -9,9 +9,9 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\RoleHelper;
-use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
 class TestControllerInheritsFromParentRoleRector extends AbstractRector

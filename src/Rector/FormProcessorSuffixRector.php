@@ -2,7 +2,7 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 
 class FormProcessorSuffixRector extends AbstractClassSuffixRector
 {

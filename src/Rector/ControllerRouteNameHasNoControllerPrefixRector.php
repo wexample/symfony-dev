@@ -7,7 +7,7 @@ use ReflectionMethod;
 use Symfony\Component\Routing\Annotation\Route;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class ControllerRouteNameHasNoControllerPrefixRector extends AbstractControllerMethodNameRector

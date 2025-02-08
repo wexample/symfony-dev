@@ -14,10 +14,10 @@ use Wexample\SymfonyDev\Rector\Attribute\RectorIgnoreControllerRoleTest;
 use Wexample\SymfonyDev\Rector\Traits\AttributeRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\RoleHelper;
-use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 

@@ -12,7 +12,7 @@ use Rector\Core\PhpParser\AstResolver;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 use ReflectionAttribute;
 use Reflector;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 
 abstract class AbstractRector extends \Rector\Core\Rector\AbstractRector
 {
