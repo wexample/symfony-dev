@@ -3,13 +3,13 @@
 namespace Wexample\SymfonyDev\Command;
 
 use Symfony\Component\HttpKernel\KernelInterface;
+use Wexample\Helpers\Helper\PathHelper;
 use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyDev\WexampleSymfonyDevBundle;
 use Wexample\SymfonyHelpers\Command\AbstractBundleCommand;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\JsonHelper;
-use Wexample\SymfonyHelpers\Helper\PathHelper;
 use Wexample\SymfonyHelpers\Service\BundleService;
 
 abstract class AbstractDevCommand extends AbstractBundleCommand
