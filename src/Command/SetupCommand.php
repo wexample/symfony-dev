@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
-use Wexample\SymfonyHelpers\Helper\PathHelper;
+use Wexample\Helpers\Helper\PathHelper;
 
 class SetupCommand extends AbstractDevCommand
 {
