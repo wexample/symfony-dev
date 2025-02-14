@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Input\InputOption;
 use Wexample\SymfonyDev\Command\Traits\WithArgPackage;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
@@ -21,6 +22,69 @@ class ImportVersionsCommand extends AbstractDevCommand
     protected function configure(): void
     {
         $this->configurePackageArg();
+        $this->addOption(
+            'source',
+            's',
+            InputOption::VALUE_OPTIONAL,
+            'Source to check installed packages: lock (composer.lock) or json (composer.json)',
+            'lock'
+        );
+    }
+
+    protected function getInstalledPackages(
+        InputInterface $input,
+        SymfonyStyle $io
+    ): array {
+        $source = $input->getOption('source');
+        $composerDir = dirname($this->getAppComposerConfigPath());
+        $installedPackages = [];
+
+        // Try composer.lock first if selected or if source is not specified
+        if ($source === 'lock') {
+            $composerLockPath = $composerDir . '/composer.lock';
+            if (file_exists($composerLockPath)) {
+                $composerLock = json_decode(file_get_contents($composerLockPath));
+                
+                // Get all installed packages from lock file
+                foreach ($composerLock->packages as $package) {
+                    $installedPackages[$package->name] = true;
+                }
+                
+                if (isset($composerLock->{'packages-dev'})) {
+                    foreach ($composerLock->{'packages-dev'} as $package) {
+                        $installedPackages[$package->name] = true;
+                    }
+                }
+
+                return $installedPackages;
+            }
+            
+            $io->warning('composer.lock not found, falling back to composer.json');
+        }
+
+        // Use composer.json if lock is not available or if explicitly selected
+        $composerJsonPath = $composerDir . '/composer.json';
+        if (!file_exists($composerJsonPath)) {
+            $io->error('Neither composer.lock nor composer.json found. Please check your project configuration.');
+            return [];
+        }
+
+        $composerJson = json_decode(file_get_contents($composerJsonPath));
+        
+        // Get packages from require and require-dev
+        if (isset($composerJson->require)) {
+            foreach ($composerJson->require as $package => $version) {
+                $installedPackages[$package] = true;
+            }
+        }
+        
+        if (isset($composerJson->{'require-dev'})) {
+            foreach ($composerJson->{'require-dev'} as $package => $version) {
+                $installedPackages[$package] = true;
+            }
+        }
+
+        return $installedPackages;
     }
 
     protected function execute(
@@ -31,6 +95,11 @@ class ImportVersionsCommand extends AbstractDevCommand
         $filterPackageName = $this->getPackageArg($input);
         $appConfig = self::getAppComposerConfig();
 
+        $installedPackages = $this->getInstalledPackages($input, $io);
+        if (empty($installedPackages)) {
+            return Command::FAILURE;
+        }
+
         $this->forEachDevPackage(function(
             string $packageName,
             object $config
@@ -38,9 +107,14 @@ class ImportVersionsCommand extends AbstractDevCommand
         (
             $appConfig,
             $io,
-            $filterPackageName
+            $filterPackageName,
+            $installedPackages
         ) {
-            if (!$filterPackageName || $filterPackageName === $config->name) {
+            // Only update if package is installed and matches filter if any
+            if (
+                (!$filterPackageName || $filterPackageName === $config->name)
+                && isset($installedPackages[$config->name])
+            ) {
                 $packageName = $config->name;
                 $appConfig->require->$packageName = '^'.$config->version;
 
