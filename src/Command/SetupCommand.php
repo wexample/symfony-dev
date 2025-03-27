@@ -14,7 +14,7 @@ class SetupCommand extends AbstractDevCommand
 {
     function getDescription(): string
     {
-        return 'Sets up the local development environment by creating symlinks for local packages in the vendor directory.';
+        return 'Sets up the development environment by creating symlinks for local packages in the vendor directory.';
     }
 
     protected function execute(
