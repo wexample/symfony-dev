@@ -1,4 +1,4 @@
-# symfony_dev
+# wexample/symfony-dev
 
 Version: 1.0.58
 
@@ -130,7 +130,7 @@ Refer to each package's documentation for specific version compatibility require
 ## Dependencies
 
 - php: >=8.2
-- wexample/symfony-helpers: ^1.0.64
+- wexample/symfony-helpers: 1.0.67
 
 
 # About us

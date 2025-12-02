@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=8.2",
-    "wexample/symfony-helpers": "1.0.66"
+    "wexample/symfony-helpers": "1.0.68"
   },
   "require-dev": {
     "rector/rector": "0.12.28",
