@@ -18,7 +18,7 @@ class EntityManipulatorHasTraitControllerRector extends AbstractEntityManipulato
 
     protected function ignore(Class_ $node): bool
     {
-        return !$this->isFinalControllerClass($node)
+        return ! $this->isFinalControllerClass($node)
             || $this->getReflexion($node)->getName() === VirtualEntityController::class;
     }
 }

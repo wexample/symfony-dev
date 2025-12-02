@@ -4,9 +4,9 @@ namespace Wexample\SymfonyDev\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Input\InputOption;
 use Wexample\SymfonyDev\Command\Traits\WithArgPackage;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
@@ -14,7 +14,7 @@ class ImportVersionsCommand extends AbstractDevCommand
 {
     use WithArgPackage;
 
-    function getDescription(): string
+    public function getDescription(): string
     {
         return "Import latest custom packages versions to current composer configuration";
     }
@@ -64,8 +64,9 @@ class ImportVersionsCommand extends AbstractDevCommand
 
         // Use composer.json if lock is not available or if explicitly selected
         $composerJsonPath = $composerDir . '/composer.json';
-        if (!file_exists($composerJsonPath)) {
+        if (! file_exists($composerJsonPath)) {
             $io->error('Neither composer.lock nor composer.json found. Please check your project configuration.');
+
             return [];
         }
 
@@ -100,11 +101,10 @@ class ImportVersionsCommand extends AbstractDevCommand
             return Command::FAILURE;
         }
 
-        $this->forEachDevPackage(function(
+        $this->forEachDevPackage(function (
             string $packageName,
             object $config
-        ) use
-        (
+        ) use (
             $appConfig,
             $io,
             $filterPackageName,
@@ -112,7 +112,7 @@ class ImportVersionsCommand extends AbstractDevCommand
         ) {
             // Only update if package is installed and matches filter if any
             if (
-                (!$filterPackageName || $filterPackageName === $config->name)
+                (! $filterPackageName || $filterPackageName === $config->name)
                 && isset($installedPackages[$config->name])
             ) {
                 $packageName = $config->name;

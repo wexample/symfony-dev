@@ -9,7 +9,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BundleUpdateRequirements extends AbstractDevCommand
 {
-    function getDescription(): string
+    public function getDescription(): string
     {
         return "Updates dependencies versions";
     }

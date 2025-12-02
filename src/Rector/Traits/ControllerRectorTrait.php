@@ -8,10 +8,10 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use ReflectionClass;
 use ReflectionMethod;
-use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\Helpers\Helper\ClassHelper;
-use Wexample\SymfonyHelpers\Helper\RoleHelper;
 use Wexample\Helpers\Helper\TextHelper;
+use Wexample\SymfonyHelpers\Controller\AbstractController;
+use Wexample\SymfonyHelpers\Helper\RoleHelper;
 use Wexample\SymfonyHelpers\Service\Syntax\ControllerSyntaxService;
 use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
@@ -23,7 +23,7 @@ trait ControllerRectorTrait
     protected function isTestControllerRouteMethod(ReflectionMethod $method): bool
     {
         return $this->isPublicAndNotMagic($method)
-            && !$method->isStatic()
+            && ! $method->isStatic()
             && str_starts_with($method->getName(), 'test');
     }
 
@@ -40,8 +40,8 @@ trait ControllerRectorTrait
         $parentClassNode = $this->getParentClassNode($node);
 
         if ($parentClassNode && $this->isInstanceOfAbstractControllerClass(
-                $parentClassNode
-            )) {
+            $parentClassNode
+        )) {
             return $this->getNodeMethod($node);
         }
 
@@ -52,14 +52,14 @@ trait ControllerRectorTrait
     {
         $parent = $node->getAttributes()['parent'];
 
-        if (!is_null($parent) && !$this->getReflexion($parent)) {
+        if (! is_null($parent) && ! $this->getReflexion($parent)) {
             // Method is from a trait.
             if (trait_exists($this->getReflexion($node)->getName())) {
                 return null;
             }
         }
 
-        if (!$parent instanceof Class_) {
+        if (! $parent instanceof Class_) {
             return null;
         }
 
@@ -78,13 +78,13 @@ trait ControllerRectorTrait
     protected function isFinalControllerClass(Node $node): bool
     {
         return $this->isInstanceOfAbstractControllerClass($node)
-            && !$node->isAbstract()
+            && ! $node->isAbstract()
             && $node->isFinal();
     }
 
     protected function getControllerTestRole(Node $node): ?string
     {
-        if (!$this->isControllerTestClass($node)) {
+        if (! $this->isControllerTestClass($node)) {
             return null;
         }
 
@@ -113,7 +113,7 @@ trait ControllerRectorTrait
         if ($this->isControllerTestClass($testControllerNode)) {
             $name = $this->getName($testControllerNode);
 
-            if (!$controllerClassPath = TestControllerHelper::buildControllerClassPath(
+            if (! $controllerClassPath = TestControllerHelper::buildControllerClassPath(
                 $name
             )) {
                 return null;
@@ -154,9 +154,9 @@ trait ControllerRectorTrait
     protected function isInstanceOfApiController(Node $node): bool
     {
         return $this->nodeIsSubclassOf(
-                $node,
-                AbstractApiController::class
-            )
+            $node,
+            AbstractApiController::class
+        )
             || $this->nodeIsSubclassOf(
                 $node,
                 AbstractApiEntityController::class
@@ -166,8 +166,8 @@ trait ControllerRectorTrait
     protected function isControllerRouteMethod(ReflectionMethod $method): bool
     {
         return $this->isPublicAndNotMagic($method)
-            && !$method->isStatic()
-            && !in_array($method->getName(), [
+            && ! $method->isStatic()
+            && ! in_array($method->getName(), [
                 'adaptiveRender',
                 'adaptiveRedirectToRoute',
                 'getEnvironment',

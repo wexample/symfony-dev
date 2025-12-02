@@ -72,7 +72,7 @@ class ControllerClassHasConstantsAsRoutesNamesRector extends AbstractRector
                         $constantClass = ObjectReference::SELF();
                         $constantName = 'ROUTE_'.strtoupper($routeName);
 
-                        if (!$this->hasClassConstant($node, $constantName)) {
+                        if (! $this->hasClassConstant($node, $constantName)) {
                             $const = new Const_(
                                 $constantName,
                                 new String_($routeName)

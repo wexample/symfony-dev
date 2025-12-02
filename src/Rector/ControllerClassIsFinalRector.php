@@ -44,7 +44,7 @@ class ControllerClassIsFinalRector extends AbstractRector
     public function refactor(Node $node)
     {
         if ($this->isInstanceOfAbstractControllerClass($node)) {
-            if (!$this->getReflexion($node)->getNativeReflection()->isAbstract()) {
+            if (! $this->getReflexion($node)->getNativeReflection()->isAbstract()) {
                 $this->visibilityManipulator->makeFinal($node);
             }
         }

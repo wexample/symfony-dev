@@ -2,6 +2,8 @@
 
 namespace Wexample\SymfonyDev\Rector;
 
+use const DIRECTORY_SEPARATOR;
+
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use Rector\Core\Application\FileSystem\RemovedAndAddedFilesCollector;
@@ -12,7 +14,6 @@ use Symplify\RuleDocGenerator\Exception\PoorDocumentationException;
 use Symplify\RuleDocGenerator\Exception\ShouldNotHappenException;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use const DIRECTORY_SEPARATOR;
 
 abstract class AbstractClassSuffixRector extends AbstractRector
 {
@@ -52,7 +53,7 @@ abstract class AbstractClassSuffixRector extends AbstractRector
             $classPath,
             $classBasePath
         )) {
-            if (!str_ends_with(
+            if (! str_ends_with(
                 $classPath,
                 $classSuffix
             )) {

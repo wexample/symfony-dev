@@ -7,11 +7,11 @@ use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\Class_;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
+use Wexample\Helpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
-use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\RoleHelper;
-use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
 class TestControllerInheritsFromParentRoleRector extends AbstractRector
@@ -42,11 +42,11 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
         if ($role = $this->getControllerTestRole($node)) {
             $parentRole = $this->getParentRole($role);
 
-            if (!$parentRole && RoleHelper::ROLE_ANONYMOUS !== $role) {
+            if (! $parentRole && RoleHelper::ROLE_ANONYMOUS !== $role) {
                 $parentRole = RoleHelper::ROLE_ANONYMOUS;
             }
 
-            if (!$parentRole) {
+            if (! $parentRole) {
                 $parentClass = AbstractRoleControllerTestCase::class;
             } else {
                 $parentClass = $this->buildControllerTestRoleBaseClassPath($parentRole)
@@ -55,7 +55,7 @@ class TestControllerInheritsFromParentRoleRector extends AbstractRector
                     );
             }
 
-            if (!is_subclass_of($this->getName($node), $parentClass)) {
+            if (! is_subclass_of($this->getName($node), $parentClass)) {
                 $node->extends = new FullyQualified(
                     TextHelper::removePrefix(
                         $parentClass,

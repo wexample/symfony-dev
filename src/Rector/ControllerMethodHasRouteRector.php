@@ -33,7 +33,7 @@ class ControllerMethodHasRouteRector extends AbstractControllerMethodNameRector
     ): Node|array|null {
         if ($this->isControllerRouteMethod($method)
                 // TODO Waiting for API platform rewrite.
-            && !$this->isInstanceOfApiController($node)
+            && ! $this->isInstanceOfApiController($node)
         ) {
             return $this->addAttributeWithArgIfMissing(
                 $node,

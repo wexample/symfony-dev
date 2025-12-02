@@ -30,7 +30,7 @@ trait AttributeRectorTrait
             return null;
         }
 
-        if (!$attribute = $this->getFirstAttributeNode(
+        if (! $attribute = $this->getFirstAttributeNode(
             $node,
             $attributeClass
         )) {

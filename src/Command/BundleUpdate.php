@@ -15,7 +15,7 @@ class BundleUpdate extends AbstractDevCommand
 {
     use WithArgPackage;
 
-    function getDescription(): string
+    public function getDescription(): string
     {
         return "Updates one single package";
     }
@@ -31,24 +31,28 @@ class BundleUpdate extends AbstractDevCommand
             't',
             InputOption::VALUE_OPTIONAL,
             'Upgrade type',
-            BundleHelper::UPGRADE_TYPE_MINOR)
+            BundleHelper::UPGRADE_TYPE_MINOR
+        )
             ->addOption(
                 'increment',
                 'i',
                 InputOption::VALUE_OPTIONAL,
                 'Increment value',
-                1)
+                1
+            )
             ->addOption(
                 'build',
                 'b',
                 InputOption::VALUE_OPTIONAL,
                 'Build',
-                false)
+                false
+            )
             ->addOption(
                 'version-number',
                 'vn',
                 InputOption::VALUE_OPTIONAL,
-                'Version number');
+                'Version number'
+            );
     }
 
     protected function execute(
@@ -58,7 +62,7 @@ class BundleUpdate extends AbstractDevCommand
         $io = new SymfonyStyle($input, $output);
 
         $bundleName = $this->getPackageArg($input);
-        if (!$bundle = BundleHelper::getBundle(
+        if (! $bundle = BundleHelper::getBundle(
             BundleHelper::buildClassNameFromPackageName($bundleName),
             $this->kernel
         )) {
@@ -69,7 +73,7 @@ class BundleUpdate extends AbstractDevCommand
 
         $upgradeType = $input->getOption('upgradeType');
 
-        if (!in_array($upgradeType, BundleHelper::UPGRADE_TYPES)) {
+        if (! in_array($upgradeType, BundleHelper::UPGRADE_TYPES)) {
             $io->error('Unsupported release type '.$upgradeType);
 
             return Command::FAILURE;

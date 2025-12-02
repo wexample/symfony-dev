@@ -57,7 +57,7 @@ class TestControllerHasNoOrphanMethodsRector extends AbstractRector
                     if ($controllerReflexion->hasMethod($originalMethodName)) {
                         $originalMethod = $controllerReflexion->getMethod($originalMethodName);
 
-                        if (!$this->isControllerRouteMethod($originalMethod)) {
+                        if (! $this->isControllerRouteMethod($originalMethod)) {
                             $remove = true;
                         }
                     } else {

@@ -55,7 +55,7 @@ class TestControllerHasMethodsRector extends AbstractRector
             $testMethodName = ControllerSyntaxService::METHOD_PREFIX_TEST
                 .ucfirst($methodName);
 
-            if (!$testReflexion->hasMethod($testMethodName)) {
+            if (! $testReflexion->hasMethod($testMethodName)) {
                 $classMethod = new ClassMethod(
                     $testMethodName,
                     [

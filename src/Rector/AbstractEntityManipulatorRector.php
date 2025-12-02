@@ -36,9 +36,9 @@ abstract class AbstractEntityManipulatorRector extends AbstractRector
                 $node,
                 $this->getAbstractManipulatorClass()
             )
-            && !$this->ignore($node)
-            && !$node->isAbstract()
-            && !$this->isTraitUsed(
+            && ! $this->ignore($node)
+            && ! $node->isAbstract()
+            && ! $this->isTraitUsed(
                 $node,
                 VariableEntityTypeControllerTrait::class
             )
@@ -57,7 +57,7 @@ abstract class AbstractEntityManipulatorRector extends AbstractRector
                 EntitySyntaxService::COUSIN_TRAIT_MANIPULATOR
             );
 
-            if (!$this->isTraitUsed(
+            if (! $this->isTraitUsed(
                 $node,
                 $manipulatorTrait
             )) {
@@ -89,7 +89,7 @@ abstract class AbstractEntityManipulatorRector extends AbstractRector
             'Change class suffix if missing.',
             [
                 new CodeSample(
-                // code before
+                    // code before
                     'No class cousin for MySuperEntity',
                     // code after
                     'Generated cousins : MysSuperEntityManipulatorTrait, MySuperEntityCrudService, etc.'

@@ -7,12 +7,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
-use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
 use Wexample\Helpers\Helper\PathHelper;
+use Wexample\SymfonyHelpers\Helper\EnvironmentHelper;
 
 class SetupCommand extends AbstractDevCommand
 {
-    function getDescription(): string
+    public function getDescription(): string
     {
         return 'Sets up the development environment by creating symlinks for local packages in the vendor directory.';
     }
@@ -28,10 +28,9 @@ class SetupCommand extends AbstractDevCommand
             $vendorPath = $this->getCompanyVendorPath();
 
             // Get all the directories in the local vendor folder
-            $this->forEachDevPackage(function(
+            $this->forEachDevPackage(function (
                 string $packageName
-            ) use
-            (
+            ) use (
                 $vendorPath,
                 $io
             ) {

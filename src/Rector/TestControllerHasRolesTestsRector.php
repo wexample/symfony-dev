@@ -10,14 +10,14 @@ use Rector\FileSystemRector\ValueObject\AddedFileWithContent;
 use Rector\PhpAttribute\Printer\PhpAttributeGroupFactory;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
+use Wexample\Helpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyDev\Rector\Attribute\RectorIgnoreControllerRoleTest;
 use Wexample\SymfonyDev\Rector\Traits\AttributeRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\ControllerRectorTrait;
 use Wexample\SymfonyDev\Rector\Traits\RoleRectorTrait;
-use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\FileHelper;
 use Wexample\SymfonyHelpers\Helper\RoleHelper;
-use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyTesting\Helper\TestControllerHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 
@@ -43,7 +43,7 @@ class TestControllerHasRolesTestsRector extends AbstractRector
             'Ensure controller has all tests files',
             [
                 new CodeSample(
-                // code before
+                    // code before
                     'Missing ControllerTest files',
                     // code after
                     'All ControllerTest files exists'
@@ -60,7 +60,7 @@ class TestControllerHasRolesTestsRector extends AbstractRector
     public function refactor(Node $node)
     {
         if ($this->isFinalControllerClass($node)
-            && !$this->getFirstAttributeNode(
+            && ! $this->getFirstAttributeNode(
                 $node,
                 RectorIgnoreControllerRoleTest::class,
             )
@@ -87,7 +87,7 @@ class TestControllerHasRolesTestsRector extends AbstractRector
                     checkExists: false
                 );
 
-                if (!class_exists($classPath)) {
+                if (! class_exists($classPath)) {
                     # Guess a path
                     $filePathTest = getcwd().FileHelper::FOLDER_SEPARATOR
                         .ClassHelper::buildClassFilePath(

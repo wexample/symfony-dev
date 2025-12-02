@@ -31,11 +31,11 @@ abstract class AbstractRector extends \Rector\Core\Rector\AbstractRector
     public function getReflexion(Node $node): ?ClassReflection
     {
         $scope = $node->getAttribute(AttributeKey::SCOPE);
-        if (!$scope instanceof Scope) {
+        if (! $scope instanceof Scope) {
             return null;
         }
         $classReflection = $scope->getClassReflection();
-        if (!$classReflection instanceof ClassReflection) {
+        if (! $classReflection instanceof ClassReflection) {
             return null;
         }
 
