@@ -30,7 +30,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
             $devVendors = (array) $parameterBag->get('wexample_symfony_dev.dev_vendors');
         }
 
-        $this->devVendors = $devVendors ?: [DevHelper::DEV_COMPANY_NAME];
+        $this->devVendors = $devVendors ?: [];
 
         parent::__construct(
             $bundleService,
@@ -46,15 +46,15 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
     protected function forEachDevPackage(callable $callback): void
     {
         foreach ($this->devVendors as $devVendor) {
-            $localVendorPath = $this->getCompanyVendorLocalPath($devVendor);
+            $vendorPath = $this->getCompanyVendorPath($devVendor);
 
-            if (!is_dir($localVendorPath)) {
+            if (!is_dir($vendorPath)) {
                 continue;
             }
 
-            foreach (glob($localVendorPath.'/*', GLOB_ONLYDIR) ?: [] as $localPackagePath) {
+            foreach (glob($vendorPath.'/*', GLOB_ONLYDIR) ?: [] as $packagePath) {
                 $composerFile = PathHelper::join([
-                    $localPackagePath,
+                    $packagePath,
                     BundleHelper::COMPOSER_JSON_FILE_NAME,
                 ]);
 
@@ -62,22 +62,13 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
                 if (is_file($composerFile)) {
                     $callback(
                         $devVendor,
-                        basename($localPackagePath),
-                        $localPackagePath,
+                        basename($packagePath),
+                        $packagePath,
                         JsonHelper::read($composerFile)
                     );
                 }
             }
         }
-    }
-
-    protected function getCompanyVendorLocalPath(string $vendorName): string
-    {
-        return PathHelper::join([
-            $this->kernel->getProjectDir(),
-            DevHelper::VENDOR_LOCAL_DIR_NAME,
-            $vendorName,
-        ]);
     }
 
     protected function getCompanyVendorPath(string $vendorName): string
