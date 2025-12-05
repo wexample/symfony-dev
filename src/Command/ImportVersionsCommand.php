@@ -102,7 +102,9 @@ class ImportVersionsCommand extends AbstractDevCommand
         }
 
         $this->forEachDevPackage(function (
+            string $vendorName,
             string $packageName,
+            string $localPackagePath,
             object $config
         ) use (
             $appConfig,
@@ -111,14 +113,14 @@ class ImportVersionsCommand extends AbstractDevCommand
             $installedPackages
         ) {
             // Only update if package is installed and matches filter if any
+            $packageFullName = $config->name;
             if (
-                (! $filterPackageName || $filterPackageName === $config->name)
-                && isset($installedPackages[$config->name])
+                (! $filterPackageName || $filterPackageName === $packageFullName)
+                && isset($installedPackages[$packageFullName])
             ) {
-                $packageName = $config->name;
-                $appConfig->require->$packageName = '^'.$config->version;
+                $appConfig->require->$packageFullName = '^'.$config->version;
 
-                $io->success('App require now '.$config->name.' at version '.$config->version);
+                $io->success('App require now '.$packageFullName.' at version '.$config->version);
             }
         });
 

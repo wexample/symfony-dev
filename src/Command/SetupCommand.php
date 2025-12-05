@@ -25,18 +25,17 @@ class SetupCommand extends AbstractDevCommand
         $env = $_ENV['APP_HOST_ENV'] ?? EnvironmentHelper::PROD;
 
         if (EnvironmentHelper::LOCAL === $env) {
-            $vendorPath = $this->getCompanyVendorPath();
-
             // Get all the directories in the local vendor folder
             $this->forEachDevPackage(function (
-                string $packageName
+                string $vendorName,
+                string $packageName,
+                string $localPackagePath,
+                object $config
             ) use (
-                $vendorPath,
                 $io
             ) {
                 $fs = new Filesystem();
-                $localVendorPath = $this->getCompanyVendorLocalPath();
-                $localPackagePath = PathHelper::join([$localVendorPath, $packageName]);
+                $vendorPath = $this->getCompanyVendorPath($vendorName);
                 // Corresponding path in the vendor directory
                 $vendorPackagePath = PathHelper::join([$vendorPath, $packageName]);
 
