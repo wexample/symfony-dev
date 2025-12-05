@@ -21,12 +21,14 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
     public function __construct(
         protected KernelInterface $kernel,
         BundleService $bundleService,
-        protected ParameterBagInterface $parameterBag,
+        ?ParameterBagInterface $parameterBag = null,
         string $name = null,
     ) {
-        $devVendors = $parameterBag->has('wexample_symfony_dev.dev_vendors')
-            ? (array) $parameterBag->get('wexample_symfony_dev.dev_vendors')
-            : [];
+        $devVendors = [];
+
+        if ($parameterBag && $parameterBag->has('wexample_symfony_dev.dev_vendors')) {
+            $devVendors = (array) $parameterBag->get('wexample_symfony_dev.dev_vendors');
+        }
 
         $this->devVendors = $devVendors ?: [DevHelper::DEV_COMPANY_NAME];
 
