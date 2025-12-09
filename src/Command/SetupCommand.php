@@ -53,6 +53,12 @@ class SetupCommand extends AbstractDevCommand
                 $paths = glob($pattern, GLOB_ONLYDIR) ?: [];
                 
                 foreach ($paths as $packagePath) {
+                    // Only create symlink for packages with assets/package.json
+                    $packageJsonPath = $packagePath.'/assets/package.json';
+                    if (!is_file($packageJsonPath)) {
+                        continue;
+                    }
+                    
                     $symlinkPath = $packagePath.'/node_modules';
                     
                     // Remove existing symlink or directory if it exists
