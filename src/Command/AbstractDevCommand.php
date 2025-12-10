@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyDev\Command;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Wexample\Helpers\Helper\PathHelper;
 use Wexample\SymfonyDev\Helper\DevHelper;
@@ -15,12 +16,22 @@ use Wexample\SymfonyHelpers\Service\BundleService;
 abstract class AbstractDevCommand extends AbstractBundleCommand
 {
     protected BundleService $bundleService;
+    protected array $devVendors;
 
     public function __construct(
         protected KernelInterface $kernel,
         BundleService $bundleService,
+        ?ParameterBagInterface $parameterBag = null,
         string $name = null,
     ) {
+        $devVendors = [];
+
+        if ($parameterBag && $parameterBag->has('wexample_symfony_dev.dev_vendors')) {
+            $devVendors = (array) $parameterBag->get('wexample_symfony_dev.dev_vendors');
+        }
+
+        $this->devVendors = $devVendors ?: [];
+
         parent::__construct(
             $bundleService,
             $name
@@ -34,39 +45,38 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
 
     protected function forEachDevPackage(callable $callback): void
     {
-        $localVendorPath = $this->getCompanyVendorLocalPath();
+        foreach ($this->devVendors as $devVendor) {
+            $vendorPath = $this->getCompanyVendorPath($devVendor);
 
-        foreach (glob($localVendorPath.'/*', GLOB_ONLYDIR) as $localPackagePath) {
-            $composerFile = PathHelper::join([
-                $localPackagePath,
-                BundleHelper::COMPOSER_JSON_FILE_NAME,
-            ]);
+            if (! is_dir($vendorPath)) {
+                continue;
+            }
 
-            // Only returns valid packages.
-            if (is_file($composerFile)) {
-                $callback(
-                    basename($localPackagePath),
-                    JsonHelper::read($composerFile)
-                );
+            foreach (glob($vendorPath.'/*', GLOB_ONLYDIR) ?: [] as $packagePath) {
+                $composerFile = PathHelper::join([
+                    $packagePath,
+                    BundleHelper::COMPOSER_JSON_FILE_NAME,
+                ]);
+
+                // Only returns valid packages.
+                if (is_file($composerFile)) {
+                    $callback(
+                        $devVendor,
+                        basename($packagePath),
+                        $packagePath,
+                        JsonHelper::read($composerFile)
+                    );
+                }
             }
         }
     }
 
-    protected function getCompanyVendorLocalPath(): string
-    {
-        return PathHelper::join([
-            $this->kernel->getProjectDir(),
-            DevHelper::VENDOR_LOCAL_DIR_NAME,
-            DevHelper::DEV_COMPANY_NAME,
-        ]);
-    }
-
-    protected function getCompanyVendorPath(): string
+    protected function getCompanyVendorPath(string $vendorName): string
     {
         return PathHelper::join([
             $this->kernel->getProjectDir(),
             DevHelper::VENDOR_DIR_NAME,
-            DevHelper::DEV_COMPANY_NAME,
+            $vendorName,
         ]);
     }
 

@@ -5,5 +5,7 @@ services:
         public: false
 
     Wexample\SymfonyDev\:
-        resource: '../../{Command,Service}'
+        resource: '../../{Command}'
+        exclude:
+            - '../../Command/{BundleUpdate.php,BundleUpdateAll.php,BundleUpdateRequirements.php,UseLocalRepo.php,RemoveLocalRepo.php}'
         tags: ['controller.service_arguments']
