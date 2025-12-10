@@ -105,7 +105,7 @@ class SetupCommand extends AbstractDevCommand
         $io->note([
             'We are temporarily modifying composer.json to inject local "path" repositories.',
             'This allows Composer to install local development packages via symlinks.',
-            '⚠️ IMPORTANT: This change is NOT permanent — composer.json will be restored afterward.',
+            'This change is NOT permanent — composer.json will be restored afterward.',
             'As long as we only run "composer install" (not update), composer.lock remains clean and production-safe.',
         ]);
 
@@ -136,12 +136,10 @@ class SetupCommand extends AbstractDevCommand
     {
         $io->note([
             'Running composer install using the TEMPORARY composer.json.',
-            '⚠Composer may display a warning saying that composer.lock does not match the modified composer.json.',
+            'Composer may display a warning saying that composer.lock does not match the modified composer.json.',
             'This warning is expected because we temporarily inject local "path" repositories.',
-            '',
-            '💡 IMPORTANT: Composer install ALWAYS respects composer.lock.',
-            '💡 Therefore, the lock file is NOT modified and the installation remains 100% production-safe.',
-            '',
+            'Composer install ALWAYS respects composer.lock.',
+            'Therefore, the lock file is NOT modified and the installation remains 100% production-safe.',
             'After this step, composer.json will be restored to its original state.',
         ]);
 
