@@ -102,6 +102,13 @@ class SetupCommand extends AbstractDevCommand
         $composerJson = $this->kernel->getProjectDir().'/composer.json';
         $this->composerJsonBackup = file_get_contents($composerJson);
 
+        $io->note([
+            'We are temporarily modifying composer.json to inject local "path" repositories.',
+            'This allows Composer to install local development packages via symlinks.',
+            '⚠️ IMPORTANT: This change is NOT permanent — composer.json will be restored afterward.',
+            'As long as we only run "composer install" (not update), composer.lock remains clean and production-safe.',
+        ]);
+
         $data = json_decode($this->composerJsonBackup, true);
 
         if (! isset($data['repositories'])) {
@@ -118,7 +125,7 @@ class SetupCommand extends AbstractDevCommand
 
                 $data['repositories'][] = $repo;
 
-                $io->writeln("→ Added local repository: {$packagePath}");
+                $io->writeln("→ Added temporary local repository: {$packagePath}");
             }
         }
 
@@ -127,6 +134,17 @@ class SetupCommand extends AbstractDevCommand
 
     private function runComposerInstallWithLocalRepos(SymfonyStyle $io): void
     {
+        $io->note([
+            'Running composer install using the TEMPORARY composer.json.',
+            'We use "--no-lock" because the lock file corresponds to the REAL composer.json,',
+            'not the temporary one containing local repositories.',
+            '',
+            '💡 This avoids Composer complaining about outdated lock files.',
+            '💡 The lock file will NOT be modified and stays production-compatible.',
+            '',
+            'After this step, composer.json will be restored to its original state.',
+        ]);
+
         $cmd = 'composer install --no-interaction --no-lock';
         $io->writeln("Running: {$cmd}");
         exec($cmd, $output, $code);
@@ -137,6 +155,8 @@ class SetupCommand extends AbstractDevCommand
 
         if ($code !== 0) {
             $io->error('Composer install failed.');
+        } else {
+            $io->success('Composer install (dev mode) completed successfully.');
         }
     }
 
