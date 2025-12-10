@@ -13,15 +13,15 @@ use Wexample\SymfonyHelpers\Service\BundleService;
 
 /**
  * SetupComposerCommand
- * 
+ *
  * PURPOSE:
  * Install local development packages as symlinks in vendor/ directory for development.
- * 
+ *
  * PROBLEM:
  * - We want to use local package versions during development (e.g., /var/www/vendor-dev/wexample/*)
  * - Composer natively supports local "path" repositories with symlink option
  * - BUT adding them to composer.json creates a "dirty" composer.lock that breaks production
- * 
+ *
  * SOLUTION:
  * 1. Backup the original composer.json (production-ready)
  * 2. Temporarily inject local "path" repositories into composer.json
@@ -29,7 +29,7 @@ use Wexample\SymfonyHelpers\Service\BundleService;
  *    - Respects composer.lock (no changes to lock file)
  *    - Replaces installed packages with symlinks to local paths
  * 4. Restore original composer.json
- * 
+ *
  * RESULT:
  * - composer.json and composer.lock remain production-ready
  * - vendor/ contains symlinks to local development packages
@@ -65,6 +65,7 @@ class SetupComposerCommand extends AbstractDevCommand
 
         if (empty($this->vendorDevPaths)) {
             $io->error('No vendor_dev_paths configured. Please configure wexample_symfony_dev.vendor_dev_paths in your config.');
+
             return Command::FAILURE;
         }
 
@@ -79,6 +80,7 @@ class SetupComposerCommand extends AbstractDevCommand
             $io->warning('No local repositories found to inject. Restoring files.');
             $this->restoreComposerJson($io);
             $this->restoreComposerLock($io);
+
             return Command::SUCCESS;
         }
 
@@ -97,9 +99,11 @@ class SetupComposerCommand extends AbstractDevCommand
 
         if ($success) {
             $io->success('Local development packages installed as symlinks successfully.');
+
             return Command::SUCCESS;
         } else {
             $io->error('Composer install failed. Check the output above for details.');
+
             return Command::FAILURE;
         }
     }
@@ -114,9 +118,10 @@ class SetupComposerCommand extends AbstractDevCommand
     private function backupComposerLock(SymfonyStyle $io): void
     {
         $composerLockPath = $this->kernel->getProjectDir().'/composer.lock';
-        
-        if (!file_exists($composerLockPath)) {
+
+        if (! file_exists($composerLockPath)) {
             $io->writeln('⊘ No composer.lock to backup');
+
             return;
         }
 
@@ -128,7 +133,7 @@ class SetupComposerCommand extends AbstractDevCommand
     private function removeComposerLock(SymfonyStyle $io): void
     {
         $composerLockPath = $this->kernel->getProjectDir().'/composer.lock';
-        
+
         if (file_exists($composerLockPath)) {
             unlink($composerLockPath);
             $io->writeln('✓ composer.lock temporarily removed');
@@ -158,6 +163,7 @@ class SetupComposerCommand extends AbstractDevCommand
 
             if (empty($matches)) {
                 $io->writeln("⚠ No directories found for pattern: {$pattern}");
+
                 continue;
             }
 
@@ -165,19 +171,20 @@ class SetupComposerCommand extends AbstractDevCommand
             $packagesByParent = [];
             foreach ($matches as $packagePath) {
                 // Verify this is a valid Composer package
-                if (!file_exists($packagePath.'/composer.json')) {
+                if (! file_exists($packagePath.'/composer.json')) {
                     $io->writeln("⊘ Skipping {$packagePath}: no composer.json found");
+
                     continue;
                 }
 
                 $parentDir = dirname($packagePath);
-                if (!isset($packagesByParent[$parentDir])) {
+                if (! isset($packagesByParent[$parentDir])) {
                     $packagesByParent[$parentDir] = [];
                 }
-                
+
                 $vendorName = basename(dirname($packagePath));
                 $packageName = basename($packagePath);
-                
+
                 $packagesByParent[$parentDir][] = [
                     'vendor' => $vendorName,
                     'package' => $packageName,
@@ -188,12 +195,12 @@ class SetupComposerCommand extends AbstractDevCommand
             // Add one repository per parent directory with wildcard pattern
             foreach ($packagesByParent as $parentDir => $packages) {
                 $repositoryUrl = $parentDir . '/*';
-                
+
                 // Avoid duplicate repositories
                 if (in_array($repositoryUrl, $repositoriesAdded)) {
                     continue;
                 }
-                
+
                 $data['repositories'][] = [
                     'type' => 'path',
                     'url' => $repositoryUrl,
@@ -201,10 +208,10 @@ class SetupComposerCommand extends AbstractDevCommand
                         'symlink' => true,
                     ],
                 ];
-                
+
                 $repositoriesAdded[] = $repositoryUrl;
                 $io->writeln("→ Added repository: {$repositoryUrl}");
-                
+
                 // Track packages for removal
                 foreach ($packages as $package) {
                     $packagesToReplace[] = [
@@ -241,7 +248,7 @@ class SetupComposerCommand extends AbstractDevCommand
             if (isset($data['require'][$packageName])) {
                 $originalVersion = $data['require'][$packageName];
                 $relaxedVersion = $this->makeVersionFlexible($originalVersion);
-                
+
                 if ($relaxedVersion !== $originalVersion) {
                     $data['require'][$packageName] = $relaxedVersion;
                     $io->writeln("  ↻ Relaxed version: {$packageName} {$originalVersion} → {$relaxedVersion}");
@@ -253,7 +260,7 @@ class SetupComposerCommand extends AbstractDevCommand
             if (isset($data['require-dev'][$packageName])) {
                 $originalVersion = $data['require-dev'][$packageName];
                 $relaxedVersion = $this->makeVersionFlexible($originalVersion);
-                
+
                 if ($relaxedVersion !== $originalVersion) {
                     $data['require-dev'][$packageName] = $relaxedVersion;
                     $io->writeln("  ↻ Relaxed version: {$packageName} {$originalVersion} → {$relaxedVersion}");
@@ -291,14 +298,16 @@ class SetupComposerCommand extends AbstractDevCommand
         foreach ($packagesToReplace as $package) {
             $packagePath = "{$vendorDir}/{$package['vendor']}/{$package['package']}";
 
-            if (!file_exists($packagePath)) {
+            if (! file_exists($packagePath)) {
                 $io->writeln("⊘ Package not installed: {$package['vendor']}/{$package['package']}");
+
                 continue;
             }
 
             // Don't remove if it's already a symlink
             if (is_link($packagePath)) {
                 $io->writeln("→ Already a symlink: {$package['vendor']}/{$package['package']}");
+
                 continue;
             }
 
@@ -321,7 +330,7 @@ class SetupComposerCommand extends AbstractDevCommand
 
         $projectDir = $this->kernel->getProjectDir();
         $cmd = "cd {$projectDir} && composer install --no-interaction 2>&1";
-        
+
         $io->writeln("Running: composer install");
         exec($cmd, $output, $exitCode);
 
@@ -336,6 +345,7 @@ class SetupComposerCommand extends AbstractDevCommand
     {
         if ($this->composerJsonBackup === null) {
             $io->error('No composer.json backup available to restore!');
+
             return;
         }
 
@@ -346,18 +356,19 @@ class SetupComposerCommand extends AbstractDevCommand
 
     private function restoreComposerLock(SymfonyStyle $io): void
     {
-        if ($this->composerLockBackupPath === null || !file_exists($this->composerLockBackupPath)) {
+        if ($this->composerLockBackupPath === null || ! file_exists($this->composerLockBackupPath)) {
             $io->writeln('⊘ No composer.lock backup to restore');
+
             return;
         }
 
         $composerLockPath = $this->kernel->getProjectDir().'/composer.lock';
-        
+
         // Remove the lock file that was generated by composer install
         if (file_exists($composerLockPath)) {
             unlink($composerLockPath);
         }
-        
+
         // Restore the original lock file
         rename($this->composerLockBackupPath, $composerLockPath);
         $io->writeln('✓ Original composer.lock restored');
