@@ -127,7 +127,7 @@ class SetupCommand extends AbstractDevCommand
 
     private function runComposerInstallWithLocalRepos(SymfonyStyle $io): void
     {
-        $cmd = 'composer install --no-interaction';
+        $cmd = 'composer install --no-interaction --no-lock';
         $io->writeln("Running: {$cmd}");
         exec($cmd, $output, $code);
 
