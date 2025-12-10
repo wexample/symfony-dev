@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Wexample\Helpers\Helper\DirHelper;
 use Wexample\SymfonyHelpers\Service\BundleService;
 
 /**
@@ -212,6 +213,9 @@ class SetupComposerCommand extends AbstractDevCommand
             }
         }
 
+        // Relax version constraints for dev packages
+        $this->relaxVersionConstraints($io, $data, $packagesToReplace);
+
         // Write modified composer.json
         file_put_contents(
             $composerJsonPath,
@@ -221,6 +225,59 @@ class SetupComposerCommand extends AbstractDevCommand
         $io->writeln("✓ ".count($repositoriesAdded)." path repositories with ".count($packagesToReplace)." packages");
 
         return $packagesToReplace;
+    }
+
+    private function relaxVersionConstraints(SymfonyStyle $io, array &$data, array $packagesToReplace): void
+    {
+        $relaxedCount = 0;
+
+        foreach ($packagesToReplace as $package) {
+            $packageName = "{$package['vendor']}/{$package['package']}";
+
+            // Check in require
+            if (isset($data['require'][$packageName])) {
+                $originalVersion = $data['require'][$packageName];
+                $relaxedVersion = $this->makeVersionFlexible($originalVersion);
+                
+                if ($relaxedVersion !== $originalVersion) {
+                    $data['require'][$packageName] = $relaxedVersion;
+                    $io->writeln("  ↻ Relaxed version: {$packageName} {$originalVersion} → {$relaxedVersion}");
+                    $relaxedCount++;
+                }
+            }
+
+            // Check in require-dev
+            if (isset($data['require-dev'][$packageName])) {
+                $originalVersion = $data['require-dev'][$packageName];
+                $relaxedVersion = $this->makeVersionFlexible($originalVersion);
+                
+                if ($relaxedVersion !== $originalVersion) {
+                    $data['require-dev'][$packageName] = $relaxedVersion;
+                    $io->writeln("  ↻ Relaxed version: {$packageName} {$originalVersion} → {$relaxedVersion}");
+                    $relaxedCount++;
+                }
+            }
+        }
+
+        if ($relaxedCount > 0) {
+            $io->writeln("✓ {$relaxedCount} version constraint(s) relaxed");
+        }
+    }
+
+    private function makeVersionFlexible(string $version): string
+    {
+        // If already flexible (^, ~, *, >, <, etc.), leave as is
+        if (preg_match('/^[\^~*><=]/', $version)) {
+            return $version;
+        }
+
+        // If exact version like "1.0.74", convert to "^1.0.74"
+        if (preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+            return "^{$version}";
+        }
+
+        // For other formats, leave as is
+        return $version;
     }
 
     private function removeExistingPackages(SymfonyStyle $io, array $packagesToReplace): void
@@ -243,26 +300,12 @@ class SetupComposerCommand extends AbstractDevCommand
             }
 
             // Remove the directory
-            $this->removeDirectory($packagePath);
+            DirHelper::removeDirRecursive($packagePath);
             $io->writeln("✓ Removed: {$package['vendor']}/{$package['package']}");
             $removedCount++;
         }
 
         $io->writeln("✓ {$removedCount} package(s) removed from vendor/");
-    }
-
-    private function removeDirectory(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-
-        $files = array_diff(scandir($dir), ['.', '..']);
-        foreach ($files as $file) {
-            $path = "{$dir}/{$file}";
-            is_dir($path) ? $this->removeDirectory($path) : unlink($path);
-        }
-        rmdir($dir);
     }
 
     private function runComposerInstall(SymfonyStyle $io): bool
