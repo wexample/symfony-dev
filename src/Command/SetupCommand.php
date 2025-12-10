@@ -136,16 +136,16 @@ class SetupCommand extends AbstractDevCommand
     {
         $io->note([
             'Running composer install using the TEMPORARY composer.json.',
-            'We use "--no-lock" because the lock file corresponds to the REAL composer.json,',
-            'not the temporary one containing local repositories.',
+            '⚠Composer may display a warning saying that composer.lock does not match the modified composer.json.',
+            'This warning is expected because we temporarily inject local "path" repositories.',
             '',
-            '💡 This avoids Composer complaining about outdated lock files.',
-            '💡 The lock file will NOT be modified and stays production-compatible.',
+            '💡 IMPORTANT: Composer install ALWAYS respects composer.lock.',
+            '💡 Therefore, the lock file is NOT modified and the installation remains 100% production-safe.',
             '',
             'After this step, composer.json will be restored to its original state.',
         ]);
 
-        $cmd = 'composer install --no-interaction --no-lock';
+        $cmd = 'composer install --no-interaction';
         $io->writeln("Running: {$cmd}");
         exec($cmd, $output, $code);
 
