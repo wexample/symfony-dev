@@ -60,8 +60,9 @@ class SetupCommand extends AbstractDevCommand
     {
         $nodeModulesPath = $this->kernel->getProjectDir().'/node_modules';
 
-        if (!is_dir($nodeModulesPath)) {
+        if (! is_dir($nodeModulesPath)) {
             $io->warning('node_modules directory not found. Run yarn install first.');
+
             return;
         }
 
@@ -70,7 +71,7 @@ class SetupCommand extends AbstractDevCommand
         foreach ($this->vendorDevPaths as $pattern) {
             foreach (glob($pattern, GLOB_ONLYDIR) ?: [] as $packagePath) {
                 $packageJsonPath = $packagePath.'/assets/package.json';
-                if (!is_file($packageJsonPath)) {
+                if (! is_file($packageJsonPath)) {
                     continue;
                 }
 
@@ -80,6 +81,7 @@ class SetupCommand extends AbstractDevCommand
                     unlink($symlinkPath);
                 } elseif (is_dir($symlinkPath)) {
                     $io->warning("Skipping {$packagePath}: node_modules is a real directory");
+
                     continue;
                 }
 
@@ -102,7 +104,7 @@ class SetupCommand extends AbstractDevCommand
 
         $data = json_decode($this->composerJsonBackup, true);
 
-        if (!isset($data['repositories'])) {
+        if (! isset($data['repositories'])) {
             $data['repositories'] = [];
         }
 

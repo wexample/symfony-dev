@@ -48,7 +48,7 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
         foreach ($this->devVendors as $devVendor) {
             $vendorPath = $this->getCompanyVendorPath($devVendor);
 
-            if (!is_dir($vendorPath)) {
+            if (! is_dir($vendorPath)) {
                 continue;
             }
 
