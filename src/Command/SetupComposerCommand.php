@@ -142,9 +142,12 @@ class SetupComposerCommand extends AbstractDevCommand
         $composerJsonPath = $this->kernel->getProjectDir().'/composer.json';
         $data = json_decode($this->composerJsonBackup, true);
 
-        if (!isset($data['repositories'])) {
-            $data['repositories'] = [];
+        // Replace repositories completely (remove existing ones)
+        $originalRepositoriesCount = isset($data['repositories']) ? count($data['repositories']) : 0;
+        if ($originalRepositoriesCount > 0) {
+            $io->writeln("⊘ Removing {$originalRepositoriesCount} existing repository/repositories");
         }
+        $data['repositories'] = [];
 
         $packagesToReplace = [];
         $repositoriesAdded = [];
