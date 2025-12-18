@@ -13,9 +13,13 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-            ->arrayNode('vendor_dev_paths')
-            ->scalarPrototype()->end()
-            ->end()
+                ->arrayNode('vendor_dev_paths')
+                    ->scalarPrototype()->end()
+                ->end()
+                ->arrayNode('js_dev_packages')
+                    ->info('Glob patterns for local JS packages (e.g., /var/www/javascript-dev/wexample/*)')
+                    ->scalarPrototype()->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
