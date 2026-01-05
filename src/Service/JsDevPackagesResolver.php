@@ -13,7 +13,7 @@ class JsDevPackagesResolver
 
     /**
      * Resolve glob patterns and return an array of package aliases.
-     * 
+     *
      * @return array<string, string> Alias => absolute path
      */
     public function resolvePackages(): array
@@ -36,7 +36,7 @@ class JsDevPackagesResolver
 
     /**
      * Resolve a single pattern (with or without glob).
-     * 
+     *
      * @return array<string, string>
      */
     private function resolvePattern(string $pattern): array
@@ -85,7 +85,7 @@ class JsDevPackagesResolver
         }
 
         $data = json_decode($content, true);
-        if (!is_array($data) || !isset($data['name'])) {
+        if (! is_array($data) || ! isset($data['name'])) {
             return null;
         }
 
