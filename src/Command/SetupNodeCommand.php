@@ -9,6 +9,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Wexample\SymfonyHelpers\Service\BundleService;
+use Wexample\SymfonyDev\Service\JsDevPackagesResolver;
 
 class SetupNodeCommand extends AbstractDevCommand
 {
@@ -17,6 +18,7 @@ class SetupNodeCommand extends AbstractDevCommand
     public function __construct(
         KernelInterface $kernel,
         BundleService $bundleService,
+        private readonly JsDevPackagesResolver $jsDevPackagesResolver,
         ?ParameterBagInterface $parameterBag = null,
         string $name = null,
     ) {
@@ -39,6 +41,9 @@ class SetupNodeCommand extends AbstractDevCommand
 
         $io->section('Setting up node_modules symlinks for dev packages');
         $this->setupNodeModulesSymlinks($io);
+
+        $io->section('Installing node_modules for JS dev packages');
+        $this->installJsDevPackagesNodeModules($io);
 
         return Command::SUCCESS;
     }
@@ -82,5 +87,49 @@ class SetupNodeCommand extends AbstractDevCommand
         }
 
         $io->success("Created {$symlinkCount} symlink(s)");
+    }
+
+    private function installJsDevPackagesNodeModules(SymfonyStyle $io): void
+    {
+        $packages = $this->jsDevPackagesResolver->resolvePackages();
+
+        if (empty($packages)) {
+            $io->writeln('⊘ No js_dev_packages configured or found.');
+
+            return;
+        }
+
+        foreach ($packages as $alias => $path) {
+            $nodeModulesPath = $path.'/node_modules';
+
+            if (is_dir($nodeModulesPath)) {
+                $io->writeln("⊘ {$alias}: node_modules already exists");
+                continue;
+            }
+
+            $io->writeln("→ Installing {$alias} ({$path})");
+            $exitCode = $this->runYarnInstall($path);
+
+            if ($exitCode === 0) {
+                $io->writeln("✓ Installed {$alias}");
+            } else {
+                $io->warning("Failed to install {$alias} (exit code: {$exitCode})");
+            }
+        }
+    }
+
+    private function runYarnInstall(string $workingDir): int
+    {
+        $previousDir = getcwd();
+
+        if ($previousDir === false) {
+            return 1;
+        }
+
+        chdir($workingDir);
+        passthru('yarn install', $exitCode);
+        chdir($previousDir);
+
+        return (int) $exitCode;
     }
 }
