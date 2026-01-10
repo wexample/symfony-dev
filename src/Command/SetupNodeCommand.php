@@ -4,6 +4,7 @@ namespace Wexample\SymfonyDev\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -13,6 +14,7 @@ use Wexample\SymfonyDev\Service\JsDevPackagesResolver;
 
 class SetupNodeCommand extends AbstractDevCommand
 {
+    private const OPTION_FORCE = 'force';
     private array $vendorDevPaths = [];
 
     public function __construct(
@@ -35,15 +37,29 @@ class SetupNodeCommand extends AbstractDevCommand
         return 'Sets up node_modules symlinks for local dev packages.';
     }
 
+    protected function configure(): void
+    {
+        parent::configure();
+
+        $this
+            ->addOption(
+                self::OPTION_FORCE,
+                null,
+                InputOption::VALUE_NONE,
+                'Force yarn install for all JS dev packages, even if node_modules exists.'
+            );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $forceYarnInstall = (bool) $input->getOption(self::OPTION_FORCE);
 
         $io->section('Setting up node_modules symlinks for dev packages');
         $this->setupNodeModulesSymlinks($io);
 
         $io->section('Installing node_modules for JS dev packages');
-        $this->installJsDevPackagesNodeModules($io);
+        $this->installJsDevPackagesNodeModules($io, $forceYarnInstall);
 
         return Command::SUCCESS;
     }
@@ -89,7 +105,7 @@ class SetupNodeCommand extends AbstractDevCommand
         $io->success("Created {$symlinkCount} symlink(s)");
     }
 
-    private function installJsDevPackagesNodeModules(SymfonyStyle $io): void
+    private function installJsDevPackagesNodeModules(SymfonyStyle $io, bool $forceYarnInstall): void
     {
         $packages = $this->jsDevPackagesResolver->resolvePackages();
 
@@ -102,12 +118,13 @@ class SetupNodeCommand extends AbstractDevCommand
         foreach ($packages as $alias => $path) {
             $nodeModulesPath = $path.'/node_modules';
 
-            if (is_dir($nodeModulesPath)) {
+            if (is_dir($nodeModulesPath) && ! $forceYarnInstall) {
                 $io->writeln("⊘ {$alias}: node_modules already exists");
                 continue;
             }
 
-            $io->writeln("→ Installing {$alias} ({$path})");
+            $actionLabel = $forceYarnInstall ? 'Reinstalling' : 'Installing';
+            $io->writeln("→ {$actionLabel} {$alias} ({$path})");
             $exitCode = $this->runYarnInstall($path);
 
             if ($exitCode === 0) {
