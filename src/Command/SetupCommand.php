@@ -32,7 +32,7 @@ class SetupCommand extends AbstractDevCommand
 
         $io->title('Setting up development environment');
 
-        $this->execCommand('dev:setup-node', $output);
+        $this->execCommand('dev:setup-node', $output, ['--force' => true]);
         $this->execCommand('dev:setup-composer', $output);
 
         $io->section('Clearing Symfony cache');
