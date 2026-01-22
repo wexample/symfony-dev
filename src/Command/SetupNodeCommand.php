@@ -9,8 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Wexample\SymfonyHelpers\Service\BundleService;
 use Wexample\SymfonyDev\Service\JsDevPackagesResolver;
+use Wexample\SymfonyHelpers\Service\BundleService;
 
 class SetupNodeCommand extends AbstractDevCommand
 {
@@ -120,6 +120,7 @@ class SetupNodeCommand extends AbstractDevCommand
 
             if (is_dir($nodeModulesPath) && ! $forceYarnInstall) {
                 $io->writeln("⊘ {$alias}: node_modules already exists");
+
                 continue;
             }
 
