@@ -1,6 +1,6 @@
 # wexample/symfony-dev
 
-Version: 1.0.70
+Version: 1.0.71
 
 Development tools for Symfony
 
@@ -130,8 +130,8 @@ Refer to each package's documentation for specific version compatibility require
 ## Dependencies
 
 - php: >=8.2
-- wexample/symfony-helpers: 1.0.83
-- wexample/symfony-testing: 1.0.70
+- wexample/symfony-helpers: 1.0.84
+- wexample/symfony-testing: 1.0.71
 
 
 # About us
