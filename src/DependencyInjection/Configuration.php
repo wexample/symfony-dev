@@ -20,6 +20,10 @@ class Configuration implements ConfigurationInterface
                     ->info('Glob patterns for local JS packages (e.g., /var/www/javascript-dev/wexample/*)')
                     ->scalarPrototype()->end()
                 ->end()
+                ->arrayNode('setup_hooks')
+                    ->info('Commands to run after dev:setup-composer. Each entry can be a string or an array with command/args.')
+                    ->variablePrototype()->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
