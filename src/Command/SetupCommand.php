@@ -13,12 +13,18 @@ use Wexample\SymfonyHelpers\Service\BundleService;
 
 class SetupCommand extends AbstractDevCommand
 {
+    private array $setupHooks = [];
+
     public function __construct(
         KernelInterface $kernel,
         BundleService $bundleService,
         ?ParameterBagInterface $parameterBag = null,
         string $name = null,
     ) {
+        if ($parameterBag && $parameterBag->has('wexample_symfony_dev.setup_hooks')) {
+            $this->setupHooks = (array) $parameterBag->get('wexample_symfony_dev.setup_hooks');
+        }
+
         parent::__construct($kernel, $bundleService, $parameterBag, $name);
     }
 
@@ -53,7 +59,24 @@ class SetupCommand extends AbstractDevCommand
             $skipPropagation ? [] : ['--propagate' => true]
         );
         $this->execCommand('dev:setup-composer', $output);
-        $this->execCommand('dev:change-all-users-password', $output);
+
+        if (! empty($this->setupHooks)) {
+            $io->section('Running setup hooks');
+            foreach ($this->setupHooks as $hook) {
+                if (is_string($hook)) {
+                    $this->execCommand($hook, $output);
+                    continue;
+                }
+
+                if (is_array($hook) && isset($hook['command'])) {
+                    $args = isset($hook['args']) && is_array($hook['args']) ? $hook['args'] : [];
+                    $this->execCommand($hook['command'], $output, $args);
+                    continue;
+                }
+
+                $io->warning('Invalid setup hook definition. Expected string or {command, args}.');
+            }
+        }
 
         $io->section('Clearing Symfony cache');
         $this->execCommand('cache:clear', $output);
