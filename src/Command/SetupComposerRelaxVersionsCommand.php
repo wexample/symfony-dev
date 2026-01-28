@@ -62,20 +62,23 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
             return Command::SUCCESS;
         }
 
-        $updated = $this->relaxVersionsToStar($io, $data, $packages);
+        $updatedApp = $this->relaxVersionsToStar($io, $data, $packages);
+        $updatedLocal = $this->relaxLocalPackageDependencies($io, $packages);
 
-        if ($updated === 0) {
-            $io->writeln('⊘ No matching require/require-dev entries to update.');
+        if ($updatedApp === 0 && $updatedLocal === 0) {
+            $io->writeln('⊘ No matching require/require-dev entries to update in app or local packages.');
 
             return Command::SUCCESS;
         }
 
-        file_put_contents(
-            $composerJsonPath,
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-        );
+        if ($updatedApp > 0) {
+            file_put_contents(
+                $composerJsonPath,
+                json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            );
+        }
 
-        $io->success("Updated {$updated} composer.json constraint(s) to *.");
+        $io->success("Updated {$updatedApp} app composer.json constraint(s) and {$updatedLocal} local package constraint(s) to *.");
 
         return Command::SUCCESS;
     }
@@ -107,18 +110,18 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
                     ? $composerData['name']
                     : basename(dirname($packagePath)).'/'.basename($packagePath);
 
-                $packages[$packageName] = true;
+                $packages[$packageName] = $packagePath;
             }
         }
 
-        return array_keys($packages);
+        return $packages;
     }
 
     private function relaxVersionsToStar(SymfonyStyle $io, array &$data, array $packages): int
     {
         $updated = 0;
 
-        foreach ($packages as $packageName) {
+        foreach (array_keys($packages) as $packageName) {
             if (isset($data['require'][$packageName]) && $data['require'][$packageName] !== '*') {
                 $originalVersion = $data['require'][$packageName];
                 $data['require'][$packageName] = '*';
@@ -131,6 +134,50 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
                 $data['require-dev'][$packageName] = '*';
                 $io->writeln("  ↻ Relaxed require-dev: {$packageName} {$originalVersion} → *");
                 $updated++;
+            }
+        }
+
+        return $updated;
+    }
+
+    private function relaxLocalPackageDependencies(SymfonyStyle $io, array $packages): int
+    {
+        $updated = 0;
+        $localPackageNames = array_keys($packages);
+
+        foreach ($packages as $packageName => $packagePath) {
+            $composerPath = $packagePath.'/composer.json';
+            $composerData = json_decode(file_get_contents($composerPath), true);
+
+            if (! is_array($composerData)) {
+                $io->writeln("⚠ Skipping {$composerPath}: invalid JSON");
+
+                continue;
+            }
+
+            $changed = false;
+
+            foreach (['require', 'require-dev'] as $section) {
+                if (! isset($composerData[$section]) || ! is_array($composerData[$section])) {
+                    continue;
+                }
+
+                foreach ($localPackageNames as $localName) {
+                    if (isset($composerData[$section][$localName]) && $composerData[$section][$localName] !== '*') {
+                        $originalVersion = $composerData[$section][$localName];
+                        $composerData[$section][$localName] = '*';
+                        $io->writeln("  ↻ {$packageName} {$section}: {$localName} {$originalVersion} → *");
+                        $updated++;
+                        $changed = true;
+                    }
+                }
+            }
+
+            if ($changed) {
+                file_put_contents(
+                    $composerPath,
+                    json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                );
             }
         }
 
