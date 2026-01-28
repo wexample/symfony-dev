@@ -151,6 +151,7 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
 
             if (! is_array($composerData)) {
                 $io->writeln("⚠ Skipping {$composerPath}: invalid JSON");
+
                 continue;
             }
 
