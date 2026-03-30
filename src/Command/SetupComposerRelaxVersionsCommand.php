@@ -4,6 +4,7 @@ namespace Wexample\SymfonyDev\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -12,6 +13,7 @@ use Wexample\SymfonyHelpers\Service\BundleService;
 
 class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
 {
+    private const OPTION_PROPAGATE = 'propagate';
     private array $vendorDevPaths = [];
 
     public function __construct(
@@ -32,9 +34,22 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
         return 'Sets "*" for require and require-dev constraints of local dev packages found in vendor_dev_paths.';
     }
 
+    protected function configure(): void
+    {
+        parent::configure();
+
+        $this->addOption(
+            self::OPTION_PROPAGATE,
+            null,
+            InputOption::VALUE_NONE,
+            'Also relax inter-dependencies inside local package composer.json files.'
+        );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $propagate = (bool) $input->getOption(self::OPTION_PROPAGATE);
 
         if (empty($this->vendorDevPaths)) {
             $io->error('No vendor_dev_paths configured. Please configure wexample_symfony_dev.vendor_dev_paths in your config.');
@@ -63,7 +78,7 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
         }
 
         $updatedApp = $this->relaxVersionsToStar($io, $data, $packages);
-        $updatedLocal = $this->relaxLocalPackageDependencies($io, $packages);
+        $updatedLocal = $propagate ? $this->relaxLocalPackageDependencies($io, $packages) : 0;
 
         if ($updatedApp === 0 && $updatedLocal === 0) {
             $io->writeln('⊘ No matching require/require-dev entries to update in app or local packages.');
@@ -78,7 +93,11 @@ class SetupComposerRelaxVersionsCommand extends AbstractDevCommand
             );
         }
 
-        $io->success("Updated {$updatedApp} app composer.json constraint(s) and {$updatedLocal} local package constraint(s) to *.");
+        if ($propagate) {
+            $io->success("Updated {$updatedApp} app composer.json constraint(s) and {$updatedLocal} local package constraint(s) to *.");
+        } else {
+            $io->success("Updated {$updatedApp} app composer.json constraint(s) to *.");
+        }
 
         return Command::SUCCESS;
     }

@@ -21,5 +21,6 @@ class WexampleSymfonyDevExtension extends AbstractWexampleSymfonyExtension
         // Store the vendor dev paths as a parameter for use in commands
         $container->setParameter('wexample_symfony_dev.vendor_dev_paths', $config['vendor_dev_paths']);
         $container->setParameter('wexample_symfony_dev.js_dev_packages', $config['js_dev_packages'] ?? []);
+        $container->setParameter('wexample_symfony_dev.setup_hooks', $config['setup_hooks'] ?? []);
     }
 }
