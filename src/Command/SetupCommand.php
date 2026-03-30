@@ -65,12 +65,14 @@ class SetupCommand extends AbstractDevCommand
             foreach ($this->setupHooks as $hook) {
                 if (is_string($hook)) {
                     $this->execCommand($hook, $output);
+
                     continue;
                 }
 
                 if (is_array($hook) && isset($hook['command'])) {
                     $args = isset($hook['args']) && is_array($hook['args']) ? $hook['args'] : [];
                     $this->execCommand($hook['command'], $output, $args);
+
                     continue;
                 }
 
