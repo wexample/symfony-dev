@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 use Wexample\SymfonyHelpers\Service\BundleService;
 
 class SetupCommand extends AbstractDevCommand
@@ -81,7 +82,15 @@ class SetupCommand extends AbstractDevCommand
         }
 
         $io->section('Clearing Symfony cache');
-        $this->execCommand('cache:clear', $output);
+        $process = new Process([
+            PHP_BINARY,
+            $this->kernel->getProjectDir().'/bin/console',
+            'cache:clear',
+        ]);
+        $process->setTimeout(120);
+        $process->mustRun(function (string $type, string $buffer) use ($output): void {
+            $output->write($buffer);
+        });
 
         $io->success('Development environment setup completed successfully.');
 
