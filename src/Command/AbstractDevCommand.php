@@ -2,8 +2,10 @@
 
 namespace Wexample\SymfonyDev\Command;
 
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 use Wexample\Helpers\Helper\PathHelper;
 use Wexample\SymfonyDev\Helper\DevHelper;
 use Wexample\SymfonyDev\WexampleSymfonyDevBundle;
@@ -111,5 +113,17 @@ abstract class AbstractDevCommand extends AbstractBundleCommand
             $this->getAppComposerConfigPath(),
             $flags
         );
+    }
+
+    protected function reloadAutoloader(OutputInterface $output): void
+    {
+        $process = new Process(
+            ['composer', 'dump-autoload', '--classmap-authoritative'],
+            $this->kernel->getProjectDir()
+        );
+        $process->setTimeout(60);
+        $process->mustRun(function (string $type, string $buffer) use ($output): void {
+            $output->write($buffer);
+        });
     }
 }

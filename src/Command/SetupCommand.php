@@ -80,8 +80,19 @@ class SetupCommand extends AbstractDevCommand
             }
         }
 
+        $io->section('Regenerating autoloader');
+        $this->reloadAutoloader($output);
+
         $io->section('Clearing Symfony cache');
-        $this->execCommand('cache:clear', $output);
+        $process = new Process([
+            PHP_BINARY,
+            $this->kernel->getProjectDir().'/bin/console',
+            'cache:clear',
+        ]);
+        $process->setTimeout(120);
+        $process->mustRun(function (string $type, string $buffer) use ($output): void {
+            $output->write($buffer);
+        });
 
         $io->success('Development environment setup completed successfully.');
 
