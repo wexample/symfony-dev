@@ -204,6 +204,7 @@ class SetupComposerCommand extends AbstractDevCommand
                 $data['repositories'][] = [
                     'type' => 'path',
                     'url' => $repositoryUrl,
+                    'canonical' => false,
                     'options' => [
                         'symlink' => true,
                     ],
