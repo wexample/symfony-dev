@@ -97,15 +97,75 @@ class SetupComposerCommand extends AbstractDevCommand
         $this->restoreComposerJson($io);
         $this->restoreComposerLock($io);
 
-        if ($success) {
-            $io->success('Local development packages installed as symlinks successfully.');
-
-            return Command::SUCCESS;
-        } else {
+        if (! $success) {
             $io->error('Composer install failed. Check the output above for details.');
 
             return Command::FAILURE;
         }
+
+        // Step 7: Force local sources to win, regardless of Composer resolution.
+        //
+        // The path repositories above are non-canonical (canonical:false) so that
+        // third-party packages pinning exact OLD versions of a wexample/* package
+        // can still resolve them from Packagist. The flip side: Composer then
+        // *prefers* Packagist for any wexample/* package that is published there —
+        // even an older version — and installs a stale copy over our local sources.
+        // That is the recurring "route does not exist after a publish" trap.
+        //
+        // So after Composer has built a consistent vendor/ tree, we force a symlink
+        // to the local source for every dev package. This is deterministic and does
+        // not depend on version resolution: the working copy always wins in dev.
+        $io->section('Step 7: Force-symlink local sources over vendor/');
+        $this->forceSymlinkLocalSources($io);
+
+        $io->success('Local development packages installed as symlinks successfully.');
+
+        return Command::SUCCESS;
+    }
+
+    private function forceSymlinkLocalSources(SymfonyStyle $io): void
+    {
+        $vendorDir = $this->kernel->getProjectDir().'/vendor';
+        $linked = 0;
+
+        foreach ($this->vendorDevPaths as $pattern) {
+            foreach ((glob($pattern, GLOB_ONLYDIR) ?: []) as $sourcePath) {
+                $composerPath = $sourcePath.'/composer.json';
+                if (! file_exists($composerPath)) {
+                    continue;
+                }
+
+                $composerData = json_decode(file_get_contents($composerPath), true);
+                $packageName = is_array($composerData) && isset($composerData['name'])
+                    ? $composerData['name']
+                    : basename(dirname($sourcePath)).'/'.basename($sourcePath);
+
+                $target = $vendorDir.'/'.$packageName;
+
+                // Already pointing at this exact source: nothing to do.
+                if (is_link($target) && readlink($target) === $sourcePath) {
+                    continue;
+                }
+
+                if (is_link($target) || file_exists($target)) {
+                    if (is_dir($target) && ! is_link($target)) {
+                        DirHelper::removeDirRecursive($target);
+                    } else {
+                        unlink($target);
+                    }
+                }
+
+                if (! is_dir(dirname($target))) {
+                    mkdir(dirname($target), 0775, true);
+                }
+
+                symlink($sourcePath, $target);
+                $io->writeln("  ✓ {$packageName} → {$sourcePath}");
+                $linked++;
+            }
+        }
+
+        $io->writeln("✓ {$linked} local source(s) force-symlinked");
     }
 
     private function backupComposerJson(SymfonyStyle $io): void
@@ -201,6 +261,16 @@ class SetupComposerCommand extends AbstractDevCommand
                     continue;
                 }
 
+                // canonical MUST stay false. DO NOT flip to true.
+                // It looks tempting: with canonical:false Composer prefers a
+                // Packagist version of a wexample/* package even when it is OLDER
+                // than the local source (the "route does not exist after publish"
+                // bug). BUT canonical:true makes the path repo authoritative and
+                // breaks resolution whenever a third-party dep pins an exact older
+                // version (e.g. syrtis/php-json-schema requires wexample/php-helpers
+                // 1.0.95 while the local source is 1.1.1 → unsatisfiable, install
+                // aborts). The staleness is fixed deterministically in Step 7
+                // (forceSymlinkLocalSources) AFTER install, not by this flag.
                 $data['repositories'][] = [
                     'type' => 'path',
                     'url' => $repositoryUrl,
