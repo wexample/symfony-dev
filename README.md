@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 3.0.1
+Version: 3.0.2
 
 Development tools for Symfony
 
