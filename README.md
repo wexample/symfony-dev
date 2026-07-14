@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 3.0.2
+Version: 3.0.3
 
 Development tools for Symfony
 
@@ -28,7 +28,7 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 ## Dependencies
 
 - php: >=8.2
-- wexample/symfony-helpers: *
+- wexample/symfony-helpers: >=3.0.0
 - wexample/symfony-testing: *
 
 ## Versioning & Compatibility Policy
