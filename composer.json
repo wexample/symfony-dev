@@ -3,7 +3,7 @@
   "description": "Development tools for Symfony",
   "type": "library",
   "license": "MIT",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "autoload": {
     "psr-4": {
       "Wexample\\SymfonyDev\\": "src/"
@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=8.2",
-    "wexample/symfony-helpers": ">=3.0.0",
+    "wexample/symfony-helpers": ">=4.0.0",
     "wexample/symfony-testing": ">=1.0.86"
   },
   "require-dev": {
