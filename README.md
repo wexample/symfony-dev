@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 4.0.8
+Version: 4.0.9
 
 `wexample/symfony-dev` is a Symfony bundle that ships a collection of [Rector](https://getrector.org/) rules for enforcing Wexample coding conventions automatically: controllers must be `final` and carry a global `#[Route]` name prefix, route names on methods must match their PHP method names, form and entity classes must carry the right class suffixes, entity `#[Column]` types must reference `Types::*` constants, and role-based test files must exist for every controller. It is aimed at Symfony developers inside the Wexample suite who want those conventions applied by a code-mod tool rather than enforced manually in code review.
 
@@ -155,8 +155,8 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 ## Dependencies
 
 - php: >=8.5
-- wexample/symfony-helpers: >=10.0.0
-- wexample/symfony-testing: >=2.0.0
+- wexample/symfony-helpers: >=11.0.0
+- wexample/symfony-testing: >=3.0.0
 
 ## Versioning & Compatibility Policy
 
