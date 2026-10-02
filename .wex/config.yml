@@ -6,7 +6,7 @@ git:
 global:
   name: symfony_dev
   type: app
-  version: 4.0.10
+  version: 4.0.11
 wex:
   migration: 7
   version: 6.0.136
