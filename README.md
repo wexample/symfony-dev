@@ -4,7 +4,7 @@ Version: 4.0.14
 
 `wexample/symfony-dev` is a Symfony bundle of development tools, registered in the `dev` and `test` environments only. It ships three things.
 
-**The demonstration data.** An application declares one class implementing `SeederInterface` — what its rows are — and gets the rest: `dev:seed` empties the database and fills it again, reproducibly (the same `--seed` gives the same rows, so acceptance scenarios can name what they walk through), `POST /_dev/seed` does the same from the browser, and « reload the demonstration data » appears in the development menu where `symfony-design-system` is installed.
+**The demonstration data.** An application declares one class implementing `SeederInterface` — what its rows are — and gets the rest: `dev:seed` empties the database and fills it again, reproducibly (the same `--seed` gives the same rows, so acceptance scenarios can name what they walk through), `POST /_dev/seed` does the same from the browser, and `wexample/symfony-dev-ds` adds « reload the demonstration data » to the development menu of `symfony-design-system`.
 
 **Different data for the tests.** A demonstration and a test suite rarely want the same rows. Give each
 its own seeder and restrict it with Symfony's `#[When]`: a class marked `#[When(env: 'dev')]` loads the
@@ -47,10 +47,7 @@ src/DependencyInjection/Configuration.php defines the tree. All three keys are o
 
 src/Resources/config/services.yaml autowires every class under `Command/`, `Controller/` and `Service/` so no manual service definition is required.
 
-Two things are wired in PHP rather than in YAML, both in the extension:
-
-- `SeederInterface` is registered for autoconfiguration, so an application's seeder is found by its interface alone, with nothing to declare.
-- src/DevMenu/SeedDevMenuProvider.php is registered only where `interface_exists(DevMenuProviderInterface::class)` — that is, where `symfony-design-system` is installed. The package depends on it in `suggest` and not in `require`: an application without a front end keeps the command and loses nothing else.
+The extension also registers `SeederInterface` for autoconfiguration, so an application's seeder is found by its interface alone, with nothing to declare.
 
 ### Command layer
 
@@ -108,7 +105,7 @@ src/Service/DatabaseResetService.php empties every table, `doctrine_migration_ve
 
 src/Controller/SeedController.php is the route the development menu posts to: `POST /_dev/seed`, named `dev_seed`, declared `env: ['dev', 'test']`. It is reached by a program and read by nobody, hence the `/_dev` path. The sign-in is asked for with `isGranted()` and not with `#[IsGranted]`: without the security bundle the attribute is read by nobody, where `isGranted()` throws — a route emptying a database fails closed. The CSRF token is checked next, then the visitor is sent to `/`, signed out with the accounts that were replaced. The route exists only where an application imports src/Resources/config/routes.yaml.
 
-src/DevMenu/SeedDevMenuProvider.php adds « reload the demonstration data » to the development menu of `symfony-design-system`, at the end of its account actions. It returns nothing at all when there is no seeder or when the route was not imported; it returns the entry disabled while nobody is signed in; otherwise the entry posts to the route with its token, a confirmation and `busy: true` — the answer is a whole new page, slow to come. Its labels are words and not translation keys, as the interface allows: this package ships no asset tree.
+The entry of the development menu posting to that route is not here: it is front-end, and lives in `symfony-dev-ds`, which depends on `symfony-design-system`. This package depends on no front-end package — `symfony-loader` depends on it, so the other way round would be a cycle.
 
 ### Service
 

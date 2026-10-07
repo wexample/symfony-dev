@@ -18,10 +18,7 @@ The bundle is built from four independent layers: a **DependencyInjection** laye
 
 {{ path("src/Resources/config/services.yaml") }} autowires every class under `Command/`, `Controller/` and `Service/` so no manual service definition is required.
 
-Two things are wired in PHP rather than in YAML, both in the extension:
-
-- `SeederInterface` is registered for autoconfiguration, so an application's seeder is found by its interface alone, with nothing to declare.
-- {{ path("src/DevMenu/SeedDevMenuProvider.php") }} is registered only where `interface_exists(DevMenuProviderInterface::class)` — that is, where `symfony-design-system` is installed. The package depends on it in `suggest` and not in `require`: an application without a front end keeps the command and loses nothing else.
+The extension also registers `SeederInterface` for autoconfiguration, so an application's seeder is found by its interface alone, with nothing to declare.
 
 ### Command layer
 
@@ -79,7 +76,7 @@ The content belongs to the application, the mechanism to this bundle. An applica
 
 {{ path("src/Controller/SeedController.php") }} is the route the development menu posts to: `POST /_dev/seed`, named `dev_seed`, declared `env: ['dev', 'test']`. It is reached by a program and read by nobody, hence the `/_dev` path. The sign-in is asked for with `isGranted()` and not with `#[IsGranted]`: without the security bundle the attribute is read by nobody, where `isGranted()` throws — a route emptying a database fails closed. The CSRF token is checked next, then the visitor is sent to `/`, signed out with the accounts that were replaced. The route exists only where an application imports {{ path("src/Resources/config/routes.yaml") }}.
 
-{{ path("src/DevMenu/SeedDevMenuProvider.php") }} adds « reload the demonstration data » to the development menu of `symfony-design-system`, at the end of its account actions. It returns nothing at all when there is no seeder or when the route was not imported; it returns the entry disabled while nobody is signed in; otherwise the entry posts to the route with its token, a confirmation and `busy: true` — the answer is a whole new page, slow to come. Its labels are words and not translation keys, as the interface allows: this package ships no asset tree.
+The entry of the development menu posting to that route is not here: it is front-end, and lives in `symfony-dev-ds`, which depends on `symfony-design-system`. This package depends on no front-end package — `symfony-loader` depends on it, so the other way round would be a cycle.
 
 ### Service
 

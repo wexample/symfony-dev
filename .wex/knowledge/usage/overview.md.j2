@@ -1,6 +1,6 @@
 `wexample/symfony-dev` is a Symfony bundle of development tools, registered in the `dev` and `test` environments only. It ships three things.
 
-**The demonstration data.** An application declares one class implementing `SeederInterface` — what its rows are — and gets the rest: `dev:seed` empties the database and fills it again, reproducibly (the same `--seed` gives the same rows, so acceptance scenarios can name what they walk through), `POST /_dev/seed` does the same from the browser, and « reload the demonstration data » appears in the development menu where `symfony-design-system` is installed.
+**The demonstration data.** An application declares one class implementing `SeederInterface` — what its rows are — and gets the rest: `dev:seed` empties the database and fills it again, reproducibly (the same `--seed` gives the same rows, so acceptance scenarios can name what they walk through), `POST /_dev/seed` does the same from the browser, and `wexample/symfony-dev-ds` adds « reload the demonstration data » to the development menu of `symfony-design-system`.
 
 **Different data for the tests.** A demonstration and a test suite rarely want the same rows. Give each
 its own seeder and restrict it with Symfony's `#[When]`: a class marked `#[When(env: 'dev')]` loads the

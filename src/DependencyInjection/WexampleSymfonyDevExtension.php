@@ -3,8 +3,6 @@
 namespace Wexample\SymfonyDev\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Wexample\SymfonyDesignSystem\Interface\DevMenuProviderInterface;
-use Wexample\SymfonyDev\DevMenu\SeedDevMenuProvider;
 use Wexample\SymfonyDev\Interface\SeederInterface;
 use Wexample\SymfonyHelpers\DependencyInjection\AbstractWexampleSymfonyExtension;
 
@@ -31,13 +29,5 @@ class WexampleSymfonyDevExtension extends AbstractWexampleSymfonyExtension
         $container
             ->registerForAutoconfiguration(SeederInterface::class)
             ->addTag(SeederInterface::TAG);
-
-        // The entry reloading it, only where the development menu exists.
-        if (interface_exists(DevMenuProviderInterface::class)) {
-            $container
-                ->register(SeedDevMenuProvider::class, SeedDevMenuProvider::class)
-                ->setAutowired(true)
-                ->addTag(DevMenuProviderInterface::TAG);
-        }
     }
 }
