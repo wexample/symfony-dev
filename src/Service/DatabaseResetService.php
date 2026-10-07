@@ -30,8 +30,13 @@ class DatabaseResetService
      */
     public function truncateAll(array $keep = []): void
     {
+        // DBAL hands a reserved name back already quoted — `"user"` on
+        // PostgreSQL —: unquoted here, so it is compared and quoted once.
         $tables = array_diff(
-            $this->connection->createSchemaManager()->listTableNames(),
+            array_map(
+                static fn (string $table): string => trim($table, '"`'),
+                $this->connection->createSchemaManager()->listTableNames(),
+            ),
             [self::MIGRATIONS_TABLE, ...$keep],
         );
 
