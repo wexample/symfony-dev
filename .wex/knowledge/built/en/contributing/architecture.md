@@ -1,6 +1,6 @@
 ## Architecture
 
-The bundle is built from three independent layers: a **DependencyInjection** layer that reads configuration and wires services, a **Command** layer that automates the development environment, and a **Rector** layer that enforces coding conventions by transforming PHP source files. Each layer is self-contained and does not call into the others.
+The bundle is built from four independent layers: a **DependencyInjection** layer that reads configuration and wires services, a **Command** layer that automates the development environment, a **demonstration data** layer that empties the database and fills it again, and a **Rector** layer that enforces coding conventions by transforming PHP source files. Each layer is self-contained and does not call into the others.
 
 ### Entry point
 
@@ -16,11 +16,16 @@ src/DependencyInjection/WexampleSymfonyDevExtension.php calls `loadConfig()` (fr
 
 src/DependencyInjection/Configuration.php defines the tree. All three keys are optional arrays of strings (or, for `setup_hooks`, arrays of `{command, args}` maps).
 
-src/Resources/config/services.yaml autowires every class under `Command/` and `Service/` so no manual service definition is required.
+src/Resources/config/services.yaml autowires every class under `Command/`, `Controller/` and `Service/` so no manual service definition is required.
+
+Two things are wired in PHP rather than in YAML, both in the extension:
+
+- `SeederInterface` is registered for autoconfiguration, so an application's seeder is found by its interface alone, with nothing to declare.
+- src/DevMenu/SeedDevMenuProvider.php is registered only where `interface_exists(DevMenuProviderInterface::class)` — that is, where `symfony-design-system` is installed. The package depends on it in `suggest` and not in `require`: an application without a front end keeps the command and loses nothing else.
 
 ### Command layer
 
-All commands extend src/Command/AbstractDevCommand.php, which:
+The setup and password commands extend src/Command/AbstractDevCommand.php, which:
 
 - reads `wexample_symfony_dev.vendor_dev_paths` from the parameter bag into `$this->devVendors`;
 - provides `forEachDevPackage(callable)` to iterate every `composer.json`-bearing directory found under those paths;
@@ -59,6 +64,22 @@ src/Command/SetupNodeCommand.php handles the JS side. It:
 #### dev:change-user-password and dev:change-all-users-password
 
 src/Command/ChangeUserPasswordCommand.php finds a single user by an identifier field (default: `email`) and replaces their password hash. src/Command/ChangeAllUsersPasswordCommand.php does the same for every record in the repository. Both default to `App\Entity\User` and accept `--class` to point at a different entity.
+
+#### dev:seed
+
+src/Command/SeedCommand.php extends `AbstractBundleCommand` directly — it needs neither the kernel nor the dev vendor paths. It refuses to run when the application declares no seeder, then refuses again without `--force`, since the first thing it does is empty the database. `--seed` (default `2026`) is the number the dataset is drawn from. What was written is listed back, by name.
+
+### Demonstration data
+
+The content belongs to the application, the mechanism to this bundle. An application declares one class implementing src/Interface/SeederInterface.php — `load()`, returning what it wrote as `['patients' => 53]` — and nothing else: the interface is registered for autoconfiguration, so the service is found by its type.
+
+src/Service/SeedService.php is the mechanism. `seed(int $seed)` seeds `mt_rand()`, empties the database, runs every tagged seeder, flushes once, and returns the merged report. Seeding the random source before the seeders run is what makes the dataset reproducible: the same seed gives the same rows, so an acceptance scenario can name the rows it walks through. `hasSeeders()` answers whether the application declared anything, which the command and the menu entry both ask before offering to reload nothing.
+
+src/Service/DatabaseResetService.php empties every table, `doctrine_migration_versions` left alone — truncating it would have the application believe no migration ever ran. It takes the DBAL `Connection` and nothing more, so a test can hand it one directly. PostgreSQL gets a single `TRUNCATE … CASCADE`; MySQL and MariaDB get one `TRUNCATE TABLE` per table with `FOREIGN_KEY_CHECKS` lifted around them, since the order the tables come in is nobody's choice; anything else, SQLite among them, gets a `DELETE FROM` per table.
+
+src/Controller/SeedController.php is the route the development menu posts to: `POST /_dev/seed`, named `dev_seed`, declared `env: ['dev', 'test']`. It is reached by a program and read by nobody, hence the `/_dev` path. The sign-in is asked for with `isGranted()` and not with `#[IsGranted]`: without the security bundle the attribute is read by nobody, where `isGranted()` throws — a route emptying a database fails closed. The CSRF token is checked next, then the visitor is sent to `/`, signed out with the accounts that were replaced. The route exists only where an application imports src/Resources/config/routes.yaml.
+
+src/DevMenu/SeedDevMenuProvider.php adds « reload the demonstration data » to the development menu of `symfony-design-system`, at the end of its account actions. It returns nothing at all when there is no seeder or when the route was not imported; it returns the entry disabled while nobody is signed in; otherwise the entry posts to the route with its token, a confirmation and `busy: true` — the answer is a whole new page, slow to come. Its labels are words and not translation keys, as the interface allows: this package ships no asset tree.
 
 ### Service
 
