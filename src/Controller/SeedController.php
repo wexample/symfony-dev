@@ -5,6 +5,7 @@ namespace Wexample\SymfonyDev\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Wexample\SymfonyDev\Service\SeedService;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
@@ -29,6 +30,11 @@ final class SeedController extends AbstractController
         Request $request,
         SeedService $seedService
     ): RedirectResponse {
+        // No seeder, nothing to load: the database is not emptied for nothing.
+        if (! $seedService->hasSeeders()) {
+            throw new NotFoundHttpException('This application declares no demonstration data.');
+        }
+
         // Asked here rather than with #[IsGranted]: without the security
         // bundle the attribute is read by nobody, where isGranted() throws —
         // a route emptying a database fails closed.
