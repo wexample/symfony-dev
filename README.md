@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 4.0.14
+Version: 5.0.0
 
 `wexample/symfony-dev` is a Symfony bundle of development tools, registered in the `dev` and `test` environments only. It ships three things.
 
@@ -187,7 +187,7 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 
 - php: >=8.5
 - wexample/symfony-helpers: >=15.0.0
-- wexample/symfony-testing: >=5.0.0
+- wexample/symfony-testing: >=6.0.0
 
 ## Versioning & Compatibility Policy
 
