@@ -4,7 +4,7 @@ Opened: 2026-09-24
 Updated: 2026-10-09
 Author: agent:archeology
 
-> **2026-10-09 (décision du propriétaire)** : les règles Rector ne sont pas réparées ici. L'agent filestate PHP dit pour chacune si filestate la couvre déjà, s'il faut la reporter, ou si elle est inutile : `PACKAGES/PYTHON/wex/wex-addon-dev-php/.wex/journal/todo/legacy-rector-rules.md`. symfony-dev garde ses commandes de setup, de seed et de mot de passe ; les étapes 1 à 7 ci-dessous attendent ce verdict.
+> **2026-10-09 (décision du propriétaire)** : les règles Rector sont retirées de symfony-dev (le 2026-10-09, après avoir été listées) ; l'agent filestate PHP dit pour chacune si filestate la couvre déjà, s'il faut la reporter, ou si elle est inutile : `PACKAGES/PYTHON/wex/wex-addon-dev-php/.wex/journal/todo/legacy-rector-rules.md`. symfony-dev garde ses commandes de setup, de seed et de mot de passe ; les étapes 1 à 7 ci-dessous (toutes sur Rector) sont reprises par cette todo-là, rien ne reste à faire ici.
 
 ## Read this first — status of this todo
 
