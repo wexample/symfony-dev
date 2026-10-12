@@ -39,3 +39,9 @@ Issues: `/home/weeger/Desktop/WIP/WEB/WEXAMPLE/NETWORK/archeo/gitlab/issues/197.
 ## Acceptance
 
 - `composer test` green with fixture tests for each rule; a consuming app can `->sets([WexampleSetList::DEFAULT])`.
+
+## Fermé le 2026-10-12 (agent:main, avec le propriétaire)
+
+- Étapes 1–3, 5, 6 (règles Rector) : règles retirées de symfony-dev le 2026-10-09 ; leur tri revient à l'agent filestate PHP (`PACKAGES/PYTHON/wex/wex-addon-dev-php/.wex/journal/todo/legacy-rector-rules.md`).
+- Étape 4 (commandes de syntaxe) : la création des `<E>EntityManipulatorTrait` est déjà faite par filestate (`SymfonyEntityManipulatorTraitFile`, wex-addon-dev-php).
+- Étape 7 (générateur de workflow, #268) : oublié. symfony-bpmn compile les process BPMN en workflows Symfony, états, transitions et gardes compris ; on y reviendra le jour où un besoin apparaît.
