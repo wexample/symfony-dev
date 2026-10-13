@@ -10,5 +10,3 @@ command makes — `static::getContainer()->get(SeedService::class)->seed()` — 
 first, so it is a whole reset rather than an addition.
 
 **The development environment.** `dev:setup` installs the suite's local PHP and JS packages as `vendor/` symlinks without dirtying `composer.lock`, and `dev:change-user-password` / `dev:change-all-users-password` rewrite password hashes.
-
-**The coding conventions.** A collection of [Rector](https://getrector.org/) rules enforcing them automatically: controllers must be `final` and carry a global `#[Route]` name prefix, route names on methods must match their PHP method names, form and entity classes must carry the right class suffixes, entity `#[Column]` types must reference `Types::*` constants, and role-based test files must exist for every controller. They are referenced from the consuming project's `rector.php`, so the conventions are applied by a code-mod tool rather than enforced by hand in code review.

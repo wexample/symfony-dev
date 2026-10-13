@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 5.0.0
+Version: 6.0.0
 
 `wexample/symfony-dev` is a Symfony bundle of development tools, registered in the `dev` and `test` environments only. It ships three things.
 
@@ -14,7 +14,6 @@ command makes — `static::getContainer()->get(SeedService::class)->seed()` — 
 first, so it is a whole reset rather than an addition.
 
 **The development environment.** `dev:setup` installs the suite's local PHP and JS packages as `vendor/` symlinks without dirtying `composer.lock`, and `dev:change-user-password` / `dev:change-all-users-password` rewrite password hashes.
-
 
 ## Table of Contents
 
@@ -114,6 +113,10 @@ src/Service/JsDevPackagesResolver.php is consumed by `SetupNodeCommand`. It read
 
 src/Helper/DevHelper.php holds the single constant `VENDOR_DIR_NAME = 'vendor'`.
 
+## Integration in the Suite
+
+This package is part of the Wexample Suite — a collection of high-quality, modular tools designed to work seamlessly together across multiple languages and environments.
+
 ### Related Packages
 
 The suite includes packages for configuration management, file handling, prompts, and more. Each package can be used independently or as part of the integrated suite.
@@ -123,8 +126,8 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 ## Dependencies
 
 - php: >=8.5
-- wexample/symfony-helpers: >=15.0.0
-- wexample/symfony-testing: >=6.0.0
+- wexample/symfony-helpers: >=16.0.0
+- wexample/symfony-testing: >=7.0.0
 
 ## Versioning & Compatibility Policy
 

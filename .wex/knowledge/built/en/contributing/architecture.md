@@ -1,6 +1,6 @@
 ## Architecture
 
-The bundle is built from four independent layers: a **DependencyInjection** layer that reads configuration and wires services, a **Command** layer that automates the development environment, a **demonstration data** layer that empties the database and fills it again, and a **Rector** layer that enforces coding conventions by transforming PHP source files. Each layer is self-contained and does not call into the others.
+The bundle is built from three independent layers: a **DependencyInjection** layer that reads configuration and wires services, a **Command** layer that automates the development environment, and a **demonstration data** layer that empties the database and fills it again. Each layer is self-contained and does not call into the others.
 
 ### Entry point
 
@@ -85,61 +85,3 @@ src/Service/JsDevPackagesResolver.php is consumed by `SetupNodeCommand`. It read
 ### Helper
 
 src/Helper/DevHelper.php holds the single constant `VENDOR_DIR_NAME = 'vendor'`.
-
-### Rector layer
-
-The Rector layer is a collection of rules that Rector applies to PHP source files. Rules are not loaded by Symfony and carry no service registrations; they are referenced directly in the consuming project's `rector.php`.
-
-#### Abstract base classes
-
-src/Rector/AbstractRector.php extends Rector's own `AbstractRector` and adds shared utilities used by every rule in this bundle:
-
-- `getReflexion(Node)` — retrieves the `ClassReflection` for any node from PHPStan's scope.
-- `isSubclassOf(Node, string)` and `nodeIsSubclassOf(Node, string)` — inheritance checks via reflection.
-- `isTraitUsed(Node, string)` — resolves parsed traits through `AstResolver`.
-- `renderTemplate(string, array)` — simple `` template rendering used to generate test file stubs.
-- `buildConstantArgument(string, string)` — constructs a `ClassConstFetch` AST node for a class constant reference.
-
-src/Rector/AbstractControllerMethodNameRector.php targets `ClassMethod` nodes. `refactor()` checks whether the method belongs to a class that extends `AbstractController`; if so, it hands the method to the abstract `refactorMethod(ClassMethod, ReflectionMethod)` that each subclass implements. It also provides `buildNodeControllerRoutePrefix(Node)`, which derives the expected route prefix from the controller's class name.
-
-src/Rector/AbstractClassSuffixRector.php targets `Class_` nodes. `refactor()` checks whether the class lives under `getClassBasePath()` and lacks the suffix returned by `getClassSuffix()`; if so, it renames the class with `ClassRenamer`, updates the rename map in `RenamedClassesDataCollector`, and schedules the file to be moved via `RemovedAndAddedFilesCollector`.
-
-src/Rector/AbstractEntityManipulatorRector.php targets `Class_` nodes that are concrete subclasses of a manipulator class (a crud service or controller). For each such class, it calls `getEntityClassName()` on the class itself, derives the expected cousin trait path through `EntitySyntaxService`, and inserts the trait as the first trait if it is not already present.
-
-#### Concrete rules
-
-| File | What it changes |
-|---|---|
-| src/Rector/ControllerClassIsFinalRector.php | Adds `final` to any non-abstract controller class. |
-| src/Rector/ControllerHasGlobalRouteNameRector.php | Adds `#[Route(name: 'controller_prefix_')]` to a final controller class if the attribute or its `name` argument is missing. |
-| src/Rector/ControllerMethodHasRouteRector.php | Adds `#[Route(name: 'snake_method_name')]` to any public, non-static, non-magic controller method that lacks one. |
-| src/Rector/ControllerRouteNameHasNoControllerPrefixRector.php | Strips the controller prefix from a method-level `#[Route(name:)]` that duplicates the class-level prefix. |
-| src/Rector/ControllerMethodNameMatchRouteNameRector.php | Renames the PHP method to the camelCase form of its `#[Route(name:)]` value. |
-| src/Rector/ControllerClassHasConstantsAsRoutesNamesRector.php | Replaces string route name literals in `#[Route(name:)]` with `self::ROUTE_*` constants, creating the constant if absent. |
-| src/Rector/FormSuffixRector.php | Ensures Form classes under `ClassHelper::CLASS_FORM_BASE_PATH` end with the Form suffix. |
-| src/Rector/FormProcessorSuffixRector.php | Ensures FormProcessor classes end with the FormProcessor suffix. |
-| src/Rector/EntityHasConstantsAsPropertiesTypes.php | Replaces `#[Column(type: 'string')]` string literals with `Types::STRING`-style Doctrine constants. |
-| src/Rector/EntityManipulatorHasTraitCrudServiceRector.php | Ensures concrete crud services use their entity's manipulator trait. |
-| src/Rector/EntityManipulatorHasTraitControllerRector.php | Ensures concrete entity controllers use their entity's manipulator trait, skipping abstract and virtual controllers. |
-| src/Rector/TestControllerHasRolesTestsRector.php | Creates missing role-based test class files (e.g. `AnonymousMyControllerTest.php`) for each final controller, rendering them from a project-side Twig stub. Skipped when `#[RectorIgnoreControllerRoleTest]` is present on the controller. |
-| src/Rector/TestControllerHasMethodsRector.php | Adds a failing `test*` stub method to a controller test class for each route method in the corresponding controller that has no test yet. |
-| src/Rector/TestControllerHasNoOrphanMethodsRector.php | Removes `test*` methods from a controller test class whose corresponding controller route method no longer exists. |
-| src/Rector/TestControllerInheritsFromParentRoleRector.php | Updates a role-based test class to extend the correct parent test class derived from the role hierarchy. |
-
-#### Rector traits
-
-Traits are mixed into the rules above to share logic without repeating it.
-
-src/Rector/Traits/ControllerRectorTrait.php identifies whether a class node is a controller (`isInstanceOfAbstractControllerClass`), a final controller (`isFinalControllerClass`), or a controller test class (`isControllerTestClass`). It also provides `forEachTestableOriginalControllerMethod`, which reflects the real controller referenced by a test class and invokes a callback for each route method.
-
-src/Rector/Traits/MethodRectorTrait.php provides three helpers: `isPublicAndNotMagic(ReflectionMethod)`, `getNodeMethod(Node)` (which wraps the reflection lookup in a try/catch for mid-refactor renames), and `changeMethodName(ClassMethod, string)`.
-
-src/Rector/Traits/AttributeRectorTrait.php is a CRUD layer for PHP 8 attribute nodes: find an attribute by class name, check whether a named argument already exists, add an attribute group, add or mutate an argument value (string literal or class constant fetch).
-
-src/Rector/Traits/ConstantRectorTrait.php provides `hasClassConstant(Class_, string)`, which walks the class's constant list to check for a given name.
-
-src/Rector/Traits/RoleRectorTrait.php parses `config/packages/security.yaml` at analysis time and exposes `getParentRole(string)` for navigating the role hierarchy.
-
-#### Rector attribute
-
-src/Rector/Attribute/RectorIgnoreControllerRoleTest.php is a plain PHP attribute (`#[Attribute]`). Attaching it to a controller class tells `TestControllerHasRolesTestsRector` to skip that class.
