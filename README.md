@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 6.0.0
+Version: 6.0.1
 
 `wexample/symfony-dev` is a Symfony bundle of development tools, registered in the `dev` and `test` environments only. It ships three things.
 
