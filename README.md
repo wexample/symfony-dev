@@ -1,6 +1,6 @@
 # symfony_dev
 
-Version: 6.0.5
+Version: 6.0.6
 
 Development tools for Symfony
 
